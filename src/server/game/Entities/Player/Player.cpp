@@ -5730,9 +5730,9 @@ void Player::SetRegularAttackTime()
             ItemPrototype const *proto = tmpitem->GetProto();
             if (proto->Delay)
                 SetAttackTime(WeaponAttackType(i), proto->Delay);
-            else
-                SetAttackTime(WeaponAttackType(i), BASE_ATTACK_TIME);
         }
+        else
+            SetAttackTime(WeaponAttackType(i), BASE_ATTACK_TIME);  // If there is no weapon reset attack time to base (might have been changed from forms)
     }
 }
 
@@ -7368,10 +7368,6 @@ void Player::_ApplyItemMods(Item *item, uint8 slot,bool apply)
 
     uint8 attacktype = Player::GetAttackBySlot(slot);
 
-    // check disarm only on mod apply to allow remove item mods
-    if (!CanUseAttackType(attacktype))
-        return;
-
     if (proto->Socket[0].Color)                              //only (un)equipping of items with sockets can influence metagems, so no need to waste time with normal items
         CorrectMetaGemEnchants(slot, apply);
 
@@ -7650,34 +7646,12 @@ void Player::_ApplyItemBonuses(ItemPrototype const *proto, uint8 slot, bool appl
         attType = OFF_ATTACK;
     }
 
-    float minDamage = proto->Damage[0].DamageMin;
-    float maxDamage = proto->Damage[0].DamageMax;
-    int32 extraDPS = 0;
-    // If set dpsMod in ScalingStatValue use it for min (70% from average), max (130% from average) damage
-    if (ssv)
-    {
-        extraDPS = ssv->getDPSMod(proto->ScalingStatValue);
-        if (extraDPS)
-        {
-            float average = extraDPS * proto->Delay / 1000.0f;
-            minDamage = 0.7f * average;
-            maxDamage = 1.3f * average;
-        }
-    }
-    if (minDamage > 0)
-    {
-        damage = apply ? minDamage : BASE_MINDAMAGE;
-        SetBaseWeaponDamage(attType, MINDAMAGE, damage);
-        //sLog->outError("applying mindam: assigning %f to weapon mindamage, now is: %f", damage, GetWeaponDamageRange(attType, MINDAMAGE));
-    }
+    if(CanUseAttackType(attType))
+        _ApplyWeaponDamage(slot, proto, ssv, apply);
 
-    if (maxDamage  > 0)
-    {
-        damage = apply ? maxDamage : BASE_MAXDAMAGE;
-        SetBaseWeaponDamage(attType, MAXDAMAGE, damage);
-    }
+    int32 extraDPS = ssv->getDPSMod(proto->ScalingStatValue);
 
-    // Apply feral bonus from ScalingStatValue if set
+   // Apply feral bonus from ScalingStatValue if set
     if (ssv)
     {
         if (int32 feral_bonus = ssv->getFeralBonus(proto->ScalingStatValue))
@@ -7691,10 +7665,53 @@ void Player::_ApplyItemBonuses(ItemPrototype const *proto, uint8 slot, bool appl
             ApplyFeralAPBonus(feral_bonus, apply);
     }
 
-    if (IsInFeralForm() || !CanUseAttackType(attType))
-        return;
+ }
 
-    if (proto->Delay)
+void Player::_ApplyWeaponDamage(uint8 slot, ItemPrototype const *proto, ScalingStatValuesEntry const *ssv, bool apply) 
+{
+    WeaponAttackType attType = BASE_ATTACK;
+    float damage = 0.0f;
+
+    if (slot == EQUIPMENT_SLOT_RANGED && (
+        proto->InventoryType == INVTYPE_RANGED || proto->InventoryType == INVTYPE_THROWN ||
+        proto->InventoryType == INVTYPE_RANGEDRIGHT))
+    {
+        attType = RANGED_ATTACK;
+    }
+    else if (slot == EQUIPMENT_SLOT_OFFHAND)
+    {
+        attType = OFF_ATTACK;
+    }
+
+    float minDamage = proto->Damage[0].DamageMin;
+    float maxDamage = proto->Damage[0].DamageMax;
+    int32 extraDPS = 0;
+
+    // If set dpsMod in ScalingStatValue use it for min (70% from average), max (130% from average) damage
+    if (ssv)
+    {
+        extraDPS = ssv->getDPSMod(proto->ScalingStatValue);
+        if (extraDPS)
+        {
+            float average = extraDPS * proto->Delay / 1000.0f;
+            minDamage = 0.7f * average;
+            maxDamage = 1.3f * average;
+        }
+    }
+
+    if (minDamage > 0)
+    {
+        damage = apply ? minDamage : BASE_MINDAMAGE;
+        SetBaseWeaponDamage(attType, MINDAMAGE, damage);
+    }
+
+    if (maxDamage  > 0)
+    {
+        damage = apply ? maxDamage : BASE_MAXDAMAGE;
+        SetBaseWeaponDamage(attType, MAXDAMAGE, damage);
+    }
+
+    if (proto->Delay && !IsInFeralForm())
     {
         if (slot == EQUIPMENT_SLOT_RANGED)
             SetAttackTime(RANGED_ATTACK, apply ? proto->Delay: BASE_ATTACK_TIME);
@@ -7703,6 +7720,10 @@ void Player::_ApplyItemBonuses(ItemPrototype const *proto, uint8 slot, bool appl
         else if (slot == EQUIPMENT_SLOT_OFFHAND)
             SetAttackTime(OFF_ATTACK, apply ? proto->Delay: BASE_ATTACK_TIME);
     }
+
+    // No need to modify any physical damage for ferals as it is calculated from stats only
+    if (IsInFeralForm())
+        return;
 
     if (CanModifyStats() && (damage || proto->Delay))
         UpdateDamagePhysical(attType);
@@ -13189,9 +13210,6 @@ void Player::ApplyEnchantment(Item *item, EnchantmentSlot slot, bool apply, bool
     if (!item || !item->IsEquipped())
         return;
 
-    if (!CanUseAttackType(Player::GetAttackBySlot(item->GetSlot())))
-        return;
-
     if (slot >= MAX_ENCHANTMENT_SLOT)
         return;
 
@@ -14259,14 +14277,13 @@ bool Player::CanCompleteQuest(uint32 quest_id)
 {
     if (quest_id)
     {
-        RewardedQuestSet::iterator rewItr = m_RewardedQuests.find(quest_id);
-        if (rewItr != m_RewardedQuests.end())
-            return false;                                   // not allow re-complete quest
-
         Quest const* qInfo = sObjectMgr->GetQuestTemplate(quest_id);
-
         if (!qInfo)
             return false;
+
+        RewardedQuestSet::iterator rewItr = m_RewardedQuests.find(quest_id);
+        if (!qInfo->IsRepeatable() && rewItr != m_RewardedQuests.end())
+            return false;                                   // not allow re-complete quest
 
         // auto complete quest
         if ((qInfo->IsAutoComplete() || qInfo->GetFlags() & QUEST_FLAGS_AUTOCOMPLETE) && CanTakeQuest(qInfo, false))
@@ -15203,8 +15220,9 @@ QuestStatus Player::GetQuestStatus(uint32 quest_id) const
         if (itr != m_QuestStatus.end())
             return itr->second.m_status;
 
-        if (m_RewardedQuests.find(quest_id) != m_RewardedQuests.end())
-            return QUEST_STATUS_COMPLETE;
+        if (Quest const* qInfo = sObjectMgr->GetQuestTemplate(quest_id))
+            if (!qInfo->IsRepeatable() && m_RewardedQuests.find(quest_id) != m_RewardedQuests.end())
+                return QUEST_STATUS_COMPLETE;
     }
     return QUEST_STATUS_NONE;
 }

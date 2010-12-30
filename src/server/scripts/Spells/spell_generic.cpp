@@ -26,6 +26,41 @@
 #include "SpellAuraEffects.h"
 #include "DBCEnums.h"
 
+class spell_gen_absorb0_hitlimit1 : public SpellScriptLoader
+{
+public:
+    spell_gen_absorb0_hitlimit1() : SpellScriptLoader("spell_gen_absorb0_hitlimit1") { }
+
+    class spell_gen_absorb0_hitlimit1_AuraScript : public AuraScript
+    {
+        PrepareAuraScript(spell_gen_absorb0_hitlimit1_AuraScript);
+
+        uint32 limit;
+
+        bool Load()
+        {
+            // Max absorb stored in 1 dummy effect
+            limit = SpellMgr::CalculateSpellEffectAmount(GetSpellProto(), EFFECT_1);
+            return true;
+        }
+
+        void Absorb(AuraEffect * /*aurEff*/, DamageInfo & dmgInfo, uint32 & absorbAmount)
+        {
+            absorbAmount = std::min(limit, absorbAmount);
+        }
+
+        void Register()
+        {
+             OnEffectAbsorb += AuraEffectAbsorbFn(spell_gen_absorb0_hitlimit1_AuraScript::Absorb, EFFECT_0);
+        }
+    };
+
+    AuraScript *GetAuraScript() const
+    {
+        return new spell_gen_absorb0_hitlimit1_AuraScript();
+    }
+};
+
 // 41337 Aura of Anger
 class spell_gen_aura_of_anger : public SpellScriptLoader
 {
@@ -774,6 +809,7 @@ public:
 
 void AddSC_generic_spell_scripts()
 {
+    new spell_gen_absorb0_hitlimit1();
     new spell_gen_aura_of_anger();
     new spell_gen_burn_brutallus();
     new spell_gen_leeching_swarm();
