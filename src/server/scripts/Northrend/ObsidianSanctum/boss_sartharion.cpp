@@ -1529,6 +1529,7 @@ public:
                 if(Tenebron)
                     (CAST_AI(mob_tenebron::mob_tenebronAI,Tenebron->AI()))->m_bHasPortalOpen = false;
                 SpawnWhelps();
+                m_uiHatchEggTimer = urand(40000,50000);
             }
             else
                 m_uiHatchEggTimer -= uiDiff;
