@@ -336,6 +336,7 @@ public:
         uint32 uiPlayerFaction;
         uint32 uiBossEvent;
         uint32 uiWave;
+        uint32 WavesCounter;
 
         uint64 uiUtherGUID;
         uint64 uiJainaGUID;
@@ -386,6 +387,7 @@ public:
                 uiPhaseTimer = 1000;
                 uiExorcismTimer = 7300;
                 uiWave = 0;
+                WavesCounter = 0;
             }
         }
 
@@ -726,6 +728,7 @@ public:
                         case 24:
                             if (Unit* pStalker = me->SummonCreature(NPC_INVIS_TARGET,2026.469f,1287.088f,143.596f,1.37f,TEMPSUMMON_TIMED_DESPAWN,14000))
                             {
+                                pInstance->DoUpdateWorldState(WORLD_STATE_WAVES, 0);
                                 uiStalkerGUID = pStalker->GetGUID();
                                 me->SetUInt64Value(UNIT_FIELD_TARGET, uiStalkerGUID);
                             }
@@ -875,6 +878,8 @@ public:
                             {
                                 SpawnWaveGroup(uiWave, uiWaveGUID);
                                 uiWave++;
+                                WavesCounter++;
+                                pInstance->DoUpdateWorldState(WORLD_STATE_WAVES, WavesCounter);
                             }
                             JumpToNextStep(500);
                             break;
@@ -912,6 +917,8 @@ public:
                         case 59:
                             if (pInstance->GetData(uiBossEvent) != DONE)
                             {
+                                WavesCounter++;
+                                pInstance->DoUpdateWorldState(WORLD_STATE_WAVES, WavesCounter);
                                 uint32 uiBossID = 0;
                                 if (uiBossEvent == DATA_MEATHOOK_EVENT)
                                     uiBossID = NPC_MEATHOOK;

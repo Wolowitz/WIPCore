@@ -1745,7 +1745,7 @@ void Unit::CalcAbsorbResist(Unit *pVictim, SpellSchoolMask schoolMask, DamageEff
                         break;
 
                     Unit * caster = absorbAurEff->GetCaster();
-                    if (!caster)
+                    if (!caster || caster != pVictim)   // Patch 3.0.8: Now only works on the priest.
                         break;
 
                     // Reflective Shield
@@ -2209,7 +2209,12 @@ MeleeHitOutcome Unit::RollMeleeOutcomeAgainst(const Unit *pVictim, WeaponAttackT
 
     // Miss chance based on melee
     //float miss_chance = MeleeMissChanceCalc(pVictim, attType);
-    float miss_chance = MeleeSpellMissChance(pVictim, attType, int32(GetWeaponSkillValue(attType,pVictim)) - int32(pVictim->GetDefenseSkillValue(this)), 0);
+    Unit *owner = GetOwner();
+    float miss_chance = 0;
+    if (owner && owner->GetTypeId() == TYPEID_PLAYER)
+        miss_chance = owner->MeleeSpellMissChance(pVictim, attType, int32(GetWeaponSkillValue(attType,pVictim)) - int32(pVictim->GetDefenseSkillValue(this)), 0);
+    else
+        miss_chance = MeleeSpellMissChance(pVictim, attType, int32(GetWeaponSkillValue(attType,pVictim)) - int32(pVictim->GetDefenseSkillValue(this)), 0);
 
     // Critical hit chance
     float crit_chance = GetUnitCriticalChance(attType, pVictim);
@@ -2533,7 +2538,12 @@ SpellMissInfo Unit::MeleeSpellHitResult(Unit *pVictim, SpellEntry const *spell)
 
     uint32 roll = urand (0, 10000);
 
-    uint32 missChance = uint32(MeleeSpellMissChance(pVictim, attType, fullSkillDiff, spell->Id)*100.0f);
+    Unit *owner = GetOwner();
+    uint32 missChance = 0;
+    if (owner && owner->GetTypeId() == TYPEID_PLAYER)
+        missChance = uint32(owner->MeleeSpellMissChance(pVictim, attType, fullSkillDiff, spell->Id)*100.0f);
+    else
+        missChance = uint32(MeleeSpellMissChance(pVictim, attType, fullSkillDiff, spell->Id)*100.0f);
     // Roll miss
     uint32 tmp = missChance;
     if (roll < tmp)
@@ -2702,9 +2712,20 @@ SpellMissInfo Unit::MagicSpellHitResult(Unit *pVictim, SpellEntry const *spell)
     if (IsAreaOfEffectSpell(spell))
         modHitChance -= pVictim->GetTotalAuraModifier(SPELL_AURA_MOD_AOE_AVOIDANCE);
 
+    // Cloak of Shadows Hack
+    int32 cosResist = 0;
+    if (AuraEffect * auraEff = pVictim->GetAuraEffect(31224, 0))
+        if (schoolMask & auraEff->GetMiscValue())
+            cosResist = auraEff->GetAmount();
+    modHitChance -= cosResist;
+
     int32 HitChance = modHitChance * 100;
     // Increase hit chance from attacker SPELL_AURA_MOD_SPELL_HIT_CHANCE and attacker ratings
-    HitChance += int32(m_modSpellHitChance * 100.0f);
+    Unit *owner = GetOwner();
+    if (owner && owner->GetTypeId() == TYPEID_PLAYER)
+        HitChance += int32(owner->m_modSpellHitChance * 100.0f);
+    else
+        HitChance += int32(m_modSpellHitChance * 100.0f);
 
     // Decrease hit chance from victim rating bonus
     if (pVictim->GetTypeId() == TYPEID_PLAYER)
@@ -2721,6 +2742,10 @@ SpellMissInfo Unit::MagicSpellHitResult(Unit *pVictim, SpellEntry const *spell)
 
     if (rand < tmp)
         return SPELL_MISS_MISS;
+
+    // Chaos Bolt should not be resisted or deflected
+    if (spell->SpellIconID == 3178)
+        return SPELL_MISS_NONE;
 
     // Chance resist mechanic (select max value from every mechanic spell effect)
     int32 resist_chance = pVictim->GetMechanicResistChance(spell) * 100;
@@ -2745,6 +2770,9 @@ SpellMissInfo Unit::MagicSpellHitResult(Unit *pVictim, SpellEntry const *spell)
             tmp += pVictim->GetMaxNegativeAuraModifierByMiscValue(SPELL_AURA_MOD_DEBUFF_RESISTANCE, int32(spell->Dispel)) * 100;
         }
     }
+
+    // Cloak of Shadows Hack
+    tmp -= cosResist * 100;
 
    // Roll chance
     if (rand < tmp)
@@ -6197,7 +6225,8 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, AuraEffect* trigger
                 // Vampiric Embrace
                 case 15286:
                 {
-                    if (!pVictim || !pVictim->isAlive())
+                    // affects only single-target spell
+                    if (!pVictim || !pVictim->isAlive() || IsAreaOfEffectSpell(procSpell))
                         return false;
 
                     // heal amount
@@ -6550,6 +6579,17 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, AuraEffect* trigger
 
                     triggered_spell_id = 32747;
                     break;
+                }
+                case 57934: // Tricks of the Trade
+                {
+                    if (Unit * unitTarget = GetMisdirectionTarget())
+                    {
+                        RemoveAura(dummySpell->Id, GetGUID(), 0, AURA_REMOVE_BY_DEFAULT);
+                        CastSpell(this, 59628, true);
+                        CastSpell(unitTarget, 57933, true);
+                        return true;
+                    }
+                    return false;
                 }
             }
             // Cut to the Chase
@@ -10391,6 +10431,14 @@ uint32 Unit::SpellDamageBonus(Unit *pVictim, SpellEntry const *spellProto, uint3
                     AddPctN(DoneTotalMod, (*i)->GetAmount());
                 break;
             }
+            case 6427: // Dirty Deeds
+            case 6428:
+                if (pVictim->HasAuraState(AURA_STATE_HEALTHLESS_35_PERCENT, spellProto, this))
+                {
+                    AuraEffect * eff0 = (*i)->GetBase()->GetEffect(0);
+                    DoneTotalMod *= (-eff0->GetAmount() + 100.0f) / 100.0f;
+                }
+                break;
         }
     }
 
@@ -10412,7 +10460,7 @@ uint32 Unit::SpellDamageBonus(Unit *pVictim, SpellEntry const *spellProto, uint3
             }
 
             // Torment the weak
-            if (spellProto->SpellFamilyFlags[0]&0x20200021 || spellProto->SpellFamilyFlags[1]& 0x9000)
+            if (spellProto->SpellFamilyFlags[0]&0x20600021 || spellProto->SpellFamilyFlags[1]& 0x9000)
                 if (pVictim->HasAuraType(SPELL_AURA_MOD_DECREASE_SPEED))
                 {
                     AuraEffectList const& mDumyAuras = GetAuraEffectsByType(SPELL_AURA_DUMMY);
@@ -10823,7 +10871,7 @@ bool Unit::isSpellCrit(Unit *pVictim, SpellEntry const *spellProto, SpellSchoolM
                         case 7997: // Renewed Hope
                         case 7998:
                             if (pVictim->HasAura(6788))
-                                crit_chance+=(*i)->GetAmount();
+                                crit_chance+=-(*i)->GetAmount();
                             break;
                         case   21: // Test of Faith
                         case 6935:
@@ -10902,12 +10950,6 @@ bool Unit::isSpellCrit(Unit *pVictim, SpellEntry const *spellProto, SpellSchoolM
                             break;
                         }
                     break;
-                    case SPELLFAMILY_PALADIN:
-                        // Judgement of Command proc always crits on stunned target
-                        if (spellProto->SpellFamilyName == SPELLFAMILY_PALADIN)
-                            if (spellProto->SpellFamilyFlags[0] & 0x0000000000800000LL && spellProto->SpellIconID == 561)
-                                if (pVictim->HasUnitState(UNIT_STAT_STUNNED))
-                                    return true;
                 }
             }
         case SPELL_DAMAGE_CLASS_RANGED:
@@ -11031,12 +11073,7 @@ uint32 Unit::SpellHealingBonus(Unit *pVictim, SpellEntry const *spellProto, uint
             case 4953:
             case 3736: // Hateful Totem of the Third Wind / Increased Lesser Healing Wave / LK Arena (4/5/6) Totem of the Third Wind / Savage Totem of the Third Wind
                 DoneTotal += (*i)->GetAmount();
-                break;
-            case 7997: // Renewed Hope
-            case 7998:
-                if (pVictim->HasAura(6788))
-                    AddPctN(DoneTotalMod, (*i)->GetAmount());
-                break;
+                break;            
             case   21: // Test of Faith
             case 6935:
             case 6918:
@@ -11207,11 +11244,24 @@ uint32 Unit::SpellHealingBonus(Unit *pVictim, SpellEntry const *spellProto, uint
         DoneTotal += int32(DoneAdvertisedBenefit * coeff * factorMod);
     }
 
+    // Custom scripted healing
+    // Healing Stream Totem
+    if (spellProto->Id == 52042)
+        // Restorative Totems
+        if (AuraEffect *dummy = owner->GetAuraEffect(SPELL_AURA_DUMMY, SPELLFAMILY_SHAMAN, 338, 1))
+            DoneTotalMod *= 1.0f + dummy->GetAmount() / 100.0f;
+
+    // Earth Shield's Improved Earth Shield / Improved Shields Bonus
+    if (spellProto->SpellFamilyName == SPELLFAMILY_SHAMAN && spellProto->SpellFamilyFlags[1] & 0x400)
+        DoneTotal = SpellMgr::CalculateSpellEffectAmount(spellProto, 0, this, &DoneTotal, NULL);
+
     // use float as more appropriate for negative values and percent applying
     float heal = (int32(healamount) + DoneTotal) * DoneTotalMod;
     // apply spellmod to Done amount
     if (Player* modOwner = GetSpellModOwner())
         modOwner->ApplySpellMod(spellProto->Id, damagetype == DOT ? SPELLMOD_DOT : SPELLMOD_DAMAGE, heal);
+
+    // Taken mods
 
     // Nourish cast
     if (spellProto->SpellFamilyName == SPELLFAMILY_DRUID && spellProto->SpellFamilyFlags[1] & 0x2000000)
@@ -11222,20 +11272,9 @@ uint32 Unit::SpellHealingBonus(Unit *pVictim, SpellEntry const *spellProto, uint
             TakenTotalMod *= 1.2f;
     }
 
-    // Taken mods
-
-    // Healing Wave
-    if (spellProto->SpellFamilyName == SPELLFAMILY_SHAMAN && spellProto->SpellFamilyFlags[0] & 0x40)
-    {
-        // Search for Healing Way on Victim
-        if (AuraEffect const* HealingWay = pVictim->GetAuraEffect(29203, 0))
-            AddPctN(TakenTotalMod, HealingWay->GetAmount());
-    }
-
     // Tenacity increase healing % taken
     if (AuraEffect const* Tenacity = pVictim->GetAuraEffect(58549, 0))
         AddPctN(TakenTotalMod, Tenacity->GetAmount());
-
 
     // Healing taken percent
     float minval = (float)pVictim->GetMaxNegativeAuraModifier(SPELL_AURA_MOD_HEALING_PCT);
@@ -11262,6 +11301,10 @@ uint32 Unit::SpellHealingBonus(Unit *pVictim, SpellEntry const *spellProto, uint
     for (AuraEffectList::const_iterator i = mHealingGet.begin(); i != mHealingGet.end(); ++i)
         if (GetGUID() == (*i)->GetCasterGUID() && (*i)->IsAffectedOnSpell(spellProto))
             AddPctN(TakenTotalMod, (*i)->GetAmount());
+
+    // Do not apply/remove mods to Earth Shield twice, mods will be applied to triggered spell
+    if (spellProto->SpellFamilyName == SPELLFAMILY_SHAMAN && spellProto->SpellFamilyFlags[1] & 0x400)
+        TakenTotalMod = 1.0f / DoneTotalMod;
 
     heal = (int32(heal) + TakenTotal) * TakenTotalMod;
 
@@ -11706,6 +11749,10 @@ void Unit::MeleeDamageBonus(Unit *pVictim, uint32 *pdamage, WeaponAttackType att
                     float mod = pVictim->ToPlayer()->GetRatingBonusValue(CR_CRIT_TAKEN_MELEE)*(-8.0f);
                     AddPctF(TakenTotalMod, std::max(mod, float((*i)->GetAmount())));
                 }
+                break;
+            // Renewed Hope
+            case 329:
+                AddPctN(TakenTotalMod, (*i)->GetAmount());
                 break;
             // Blessing of Sanctuary
             // Greater Blessing of Sanctuary
@@ -12851,6 +12898,11 @@ int32 Unit::ModSpellDuration(SpellEntry const* spellProto, Unit const* target, i
     if (duration < 0)
         return duration;
 
+    // Some spells should not get any mods
+    if (spellProto->SpellFamilyName == SPELLFAMILY_ROGUE && spellProto->SpellFamilyFlags[1] & 0x8       // Envenom Buff
+     || spellProto->SpellFamilyName == SPELLFAMILY_PRIEST && spellProto->SpellFamilyFlags[2] & 0x40)    // Mind Flay
+        return duration;
+
     //cut duration only of negative effects
     if (!positive)
     {
@@ -13167,7 +13219,16 @@ bool Unit::HandleStatModifier(UnitMods unitMod, UnitModifierType modifierType, f
             break;
         case BASE_PCT:
         case TOTAL_PCT:
-            m_auraModifiersGroup[unitMod][modifierType] += (apply ? amount : -amount) / 100.0f;
+            // Offhand damage is multiplicative
+            if (unitMod == UNIT_MOD_DAMAGE_OFFHAND)
+            {
+                float val = 1.0f + amount / 100.0f;
+                m_auraModifiersGroup[unitMod][modifierType] *= apply ? val : (1.0f / val);
+            }
+            else
+            {
+                m_auraModifiersGroup[unitMod][modifierType] += (apply ? amount : -amount) / 100.0f;
+            }
             break;
         default:
             break;

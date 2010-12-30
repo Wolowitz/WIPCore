@@ -144,7 +144,7 @@ public:
                 case GO_TRIBUNAL_CHEST_HERO:
                     uiTribunalChest = go->GetGUID();
                     if (m_auiEncounter[2] == DONE)
-                        go->RemoveFlag(GAMEOBJECT_FLAGS,GO_FLAG_INTERACT_COND);
+                        go->RemoveFlag(GAMEOBJECT_FLAGS,GO_FLAG_UNK1);
                     break;
                 case 191527:
                     uiTribunalSkyFloor = go->GetGUID();
@@ -176,7 +176,7 @@ public:
                         HandleGameObject(uiSjonnirDoor,true);
                         GameObject* go = instance->GetGameObject(uiTribunalChest);
                         if (go)
-                            go->RemoveFlag(GAMEOBJECT_FLAGS,GO_FLAG_INTERACT_COND);
+                            go->RemoveFlag(GAMEOBJECT_FLAGS,GO_FLAG_UNK1);
                     }
                     break;
             }

@@ -382,8 +382,32 @@ public:
 
 };
 
+class at_naxxramas_frostwyrm_wing : public AreaTriggerScript
+{
+public:
+    at_naxxramas_frostwyrm_wing() : AreaTriggerScript("at_naxxramas_frostwyrm_wing") { }
+
+    bool OnTrigger(Player* pPlayer, const AreaTriggerEntry* /*pAt*/)
+    {
+        if (pPlayer->isGameMaster())
+            return false;
+    
+        InstanceScript* pInstance = pPlayer->GetInstanceScript();
+        if (pInstance)
+        {
+            for (uint32 i = BOSS_ANUBREKHAN; i < BOSS_SAPPHIRON; ++i)
+                if (pInstance->GetBossState(i) != DONE)
+                    return true;
+        }
+
+        return false;
+    }
+
+};
+
 
 void AddSC_instance_naxxramas()
 {
     new instance_naxxramas();
+    new at_naxxramas_frostwyrm_wing();
 }

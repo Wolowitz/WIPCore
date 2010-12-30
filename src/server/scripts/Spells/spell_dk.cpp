@@ -23,13 +23,14 @@
 
 #include "ScriptPCH.h"
 #include "Spell.h"
+#include "SpellAuraEffects.h"
 
 enum DeathKnightSpells
 {
-    DK_SPELL_SUMMON_GARGOYLE                = 50514,
     DK_SPELL_CORPSE_EXPLOSION_TRIGGERED     = 43999,
     DISPLAY_GHOUL_CORPSE                    = 25537,
     DK_SPELL_SCOURGE_STRIKE_TRIGGERED       = 70890,
+    DK_SPELL_GHOUL_AVOIDANCE                = 62137,
 };
 
 // 49158 Corpse Explosion (51325, 51326, 51327, 51328)
@@ -79,46 +80,6 @@ public:
     }
 };
 
-// 50524 Runic Power Feed (keeping Gargoyle alive)
-class spell_dk_runic_power_feed : public SpellScriptLoader
-{
-public:
-    spell_dk_runic_power_feed() : SpellScriptLoader("spell_dk_runic_power_feed") { }
-
-    class spell_dk_runic_power_feed_SpellScript : public SpellScript
-    {
-        PrepareSpellScript(spell_dk_runic_power_feed_SpellScript)
-        bool Validate(SpellEntry const * /*spellEntry*/)
-        {
-            if (!sSpellStore.LookupEntry(DK_SPELL_SUMMON_GARGOYLE))
-                return false;
-            return true;
-        }
-
-        void HandleDummy(SpellEffIndex /*effIndex*/)
-        {
-            if (Unit* caster = GetCaster())
-            {
-                // No power, dismiss Gargoyle
-                if (caster->GetPower(POWER_RUNIC_POWER) < 30)
-                    caster->RemoveAurasDueToSpell(DK_SPELL_SUMMON_GARGOYLE, caster->GetGUID());
-                else
-                    caster->ModifyPower(POWER_RUNIC_POWER, -30);
-            }
-        }
-
-        void Register()
-        {
-            OnEffect += SpellEffectFn(spell_dk_runic_power_feed_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
-        }
-    };
-
-    SpellScript* GetSpellScript() const
-    {
-        return new spell_dk_runic_power_feed_SpellScript();
-    }
-};
-
 // 55090 Scourge Strike (55265, 55270, 55271)
 class spell_dk_scourge_strike : public SpellScriptLoader
 {
@@ -128,19 +89,30 @@ public:
     class spell_dk_scourge_strike_SpellScript : public SpellScript
     {
         PrepareSpellScript(spell_dk_scourge_strike_SpellScript)
+    private:
+        float m_multip;
+    public:
+        spell_dk_scourge_strike_SpellScript() : m_multip(0.0f) { }
+
         bool Validate(SpellEntry const * /*spellEntry*/)
         {
             if (!sSpellStore.LookupEntry(DK_SPELL_SCOURGE_STRIKE_TRIGGERED))
                 return false;
             return true;
         }
-
         void HandleDummy(SpellEffIndex /*effIndex*/)
         {
             Unit* caster = GetCaster();
             if (Unit* unitTarget = GetHitUnit())
+                m_multip = (GetEffectValue() * unitTarget->GetDiseasesByCaster(caster->GetGUID())) / 100.0f;
+        }
+
+        void HandleAfterHit()
+        {
+            Unit* caster = GetCaster();
+            if (Unit* unitTarget = GetHitUnit())
             {
-                int32 bp = CalculatePctN(GetHitDamage(), GetEffectValue() * unitTarget->GetDiseasesByCaster(caster->GetGUID()));
+                int32 bp = GetTrueDamage() * m_multip;
                 caster->CastCustomSpell(unitTarget, DK_SPELL_SCOURGE_STRIKE_TRIGGERED, &bp, NULL, NULL, true);
             }
         }
@@ -148,12 +120,51 @@ public:
         void Register()
         {
             OnEffect += SpellEffectFn(spell_dk_scourge_strike_SpellScript::HandleDummy, EFFECT_2, SPELL_EFFECT_DUMMY);
+            AfterHit += SpellHitFn(spell_dk_scourge_strike_SpellScript::HandleAfterHit);
         }
     };
 
     SpellScript* GetSpellScript() const
     {
         return new spell_dk_scourge_strike_SpellScript();
+    }
+};
+
+// 46584 Raise Dead
+class spell_dk_raise_dead : public SpellScriptLoader
+{
+public:
+    spell_dk_raise_dead() : SpellScriptLoader("spell_dk_raise_dead") { }
+
+    class spell_dk_raise_dead_SpellScript : public SpellScript
+    {
+        PrepareSpellScript(spell_dk_raise_dead_SpellScript)
+        bool Validate(SpellEntry const * /*spellEntry*/)
+        {
+            if (!sSpellStore.LookupEntry(DK_SPELL_GHOUL_AVOIDANCE))
+                return false;
+            return true;
+        }
+
+        void HandleAfterHit()
+        {
+            Unit* caster = GetCaster();
+            if (Unit* pet = caster->ToPlayer()->GetPet())
+                if (AuraEffect * aurEff = caster->GetAuraEffect(SPELL_AURA_ADD_FLAT_MODIFIER, SPELLFAMILY_DEATHKNIGHT, 2718, 0)) {
+                    int32 bp = aurEff->GetAmount() / 1000;
+                    pet->CastCustomSpell(pet, DK_SPELL_GHOUL_AVOIDANCE, &bp, NULL, NULL, true);
+                }
+        }
+
+        void Register()
+        {
+            AfterHit += SpellHitFn(spell_dk_raise_dead_SpellScript::HandleAfterHit);
+        }
+    };
+
+    SpellScript* GetSpellScript() const
+    {
+        return new spell_dk_raise_dead_SpellScript();
     }
 };
 
@@ -199,7 +210,7 @@ public:
 void AddSC_deathknight_spell_scripts()
 {
     new spell_dk_corpse_explosion();
-    new spell_dk_runic_power_feed();
     new spell_dk_scourge_strike();
+    new spell_dk_raise_dead();
     new spell_dk_spell_deflection();
 }

@@ -758,8 +758,8 @@ void Spell::SpellDamageSchoolDmg(SpellEffIndex effIndex)
                 // Blood Boil - bonus for diseased targets
                 if (m_spellInfo->SpellFamilyFlags[0] & 0x00040000 && unitTarget->GetAuraEffect(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_DEATHKNIGHT, 0, 0, 0x00000002, m_caster->GetGUID()))
                 {
-                    damage += m_damage / 2;
-                    damage += int32(m_caster->GetTotalAttackPowerValue(RANGED_ATTACK)* 0.035f);
+                    damage += damage / 2;
+                    damage += int32(m_caster->GetTotalAttackPowerValue(BASE_ATTACK) * 0.035f);
                 }
                 break;
             }
@@ -1288,7 +1288,7 @@ void Spell::EffectDummy(SpellEffIndex effIndex)
                     case 27222:
                     case 57946: spFactor = 0.5f; break;
                 }
-                int32 damage = int32(SpellMgr::CalculateSpellEffectAmount(m_spellInfo, 0) + (6.3875 * m_spellInfo->baseLevel));
+                int32 damage = int32(SpellMgr::CalculateSpellEffectAmount(m_spellInfo, 0));
                 int32 mana = int32(damage + (m_caster->ToPlayer()->GetUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS+SPELL_SCHOOL_SHADOW) * spFactor));
 
                 if (unitTarget && (int32(unitTarget->GetHealth()) > damage))
@@ -1389,12 +1389,7 @@ void Spell::EffectDummy(SpellEffIndex effIndex)
             {
                 if (!unitTarget)
                     return;
-                // Restorative Totems
-                if (Unit *owner = m_caster->GetOwner())
-                    if (AuraEffect *dummy = owner->GetAuraEffect(SPELL_AURA_DUMMY, SPELLFAMILY_SHAMAN, 338, 1))
-                        AddPctN(damage, dummy->GetAmount());
-
-                    m_caster->CastCustomSpell(unitTarget, 52042, &damage, 0, 0, true, 0, 0, m_originalCasterGUID);
+                m_caster->CastCustomSpell(unitTarget, 52042, &damage, 0, 0, true, 0, 0, m_originalCasterGUID);
                 return;
             }
             // Mana Spring Totem
@@ -1487,6 +1482,20 @@ void Spell::EffectDummy(SpellEffIndex effIndex)
                     targets.setDst(m_targets.m_dstPos);
 
                 spell_id = CalculateDamage(0, NULL);
+                break;
+            }
+            break;
+        case SPELLFAMILY_ROGUE:
+            // Hunger for Blood
+            if (m_spellInfo->SpellFamilyFlags[1] & SPELLFAMILYFLAG1_ROGUE_HUNGERFORBLOOD)
+            {
+                m_caster->CastSpell(m_caster, 63848, true);
+                break;
+            }
+            // Cheat Death
+            if (m_spellInfo->Id == 31231)
+            {
+                m_caster->CastSpell(m_caster, 45182, true);
                 break;
             }
             break;
@@ -1883,13 +1892,18 @@ void Spell::EffectJumpDest(SpellEffIndex effIndex)
 
 void Spell::CalculateJumpSpeeds(uint8 i, float dist, float & speedXY, float & speedZ)
 {
-    if (m_spellInfo->EffectMiscValue[i])
-        speedZ = float(m_spellInfo->EffectMiscValue[i])/10;
-    else if (m_spellInfo->EffectMiscValueB[i])
+    if (m_spellInfo->EffectMiscValueB[i])
         speedZ = float(m_spellInfo->EffectMiscValueB[i])/10;
     else
         speedZ = 10.0f;
-    speedXY = dist * 10.0f / speedZ;
+
+    if (m_spellInfo->EffectValueMultiplier[i] > 0)
+        speedZ *= m_spellInfo->EffectValueMultiplier[i];
+
+    if (m_spellInfo->EffectMiscValue[i])
+        speedXY = float(m_spellInfo->EffectMiscValue[i])/10;
+    else
+        speedXY = dist * 10.0f / speedZ;
 }
 
 void Spell::EffectTeleportUnits(SpellEffIndex /*effIndex*/)
@@ -2990,6 +3004,11 @@ void Spell::EffectSummonType(SpellEffIndex effIndex)
                     if (!summon || !summon->isTotem())
                         return;
 
+                    // Mana Tide Totem
+                    if (summon->GetEntry() == 10467)
+                        if (m_caster->GetTypeId() == TYPEID_PLAYER)
+                            damage = (m_caster->GetMaxHealth() * 0.10);
+
                     if (damage)                                            // if not spell info, DB values used
                     {
                         summon->SetMaxHealth(damage);
@@ -3969,14 +3988,8 @@ void Spell::SpellDamageWeaponDmg(SpellEffIndex effIndex)
         }
         case SPELLFAMILY_PALADIN:
         {
-            // Seal of Command - Increase damage by 36% on every swing
-            if (m_spellInfo->SpellFamilyFlags[0] & 0x2000000)
-            {
-                totalDamagePercentMod *= 1.36f;            // 136% damage
-            }
-
             // Seal of Command Unleashed
-            else if (m_spellInfo->Id == 20467)
+            if (m_spellInfo->Id == 20467)
             {
                 spell_bonus += int32(0.08f * m_caster->GetTotalAttackPowerValue(BASE_ATTACK));
                 spell_bonus += int32(0.13f * m_caster->SpellBaseDamageBonus(GetSpellSchoolMask(m_spellInfo)));
@@ -5385,7 +5398,6 @@ void Spell::EffectSanctuary(SpellEffIndex /*effIndex*/)
         && m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE
         && (m_spellInfo->SpellFamilyFlags[0] & SPELLFAMILYFLAG_ROGUE_VANISH))
     {
-        m_caster->ToPlayer()->RemoveAurasByType(SPELL_AURA_MOD_ROOT);
         // Overkill
         if (m_caster->ToPlayer()->HasSpell(58426))
            m_caster->CastSpell(m_caster, 58427, true);

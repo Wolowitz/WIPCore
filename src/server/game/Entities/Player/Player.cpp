@@ -11550,6 +11550,17 @@ Item* Player::StoreNewItem(ItemPosCountVec const& dest, uint32 item, bool update
             if (proto->Spells[i].SpellTrigger == ITEM_SPELLTRIGGER_ON_NO_DELAY_USE && proto->Spells[i].SpellId > 0) // On obtain trigger
                 CastSpell(this, proto->Spells[i].SpellId, true, pItem);                
 
+        // Item Logging & Stats
+        // Log only interesting items
+        if (pItem->GetProto()->Quality >= ITEM_QUALITY_EPIC && (pItem->GetProto()->ItemLevel >= 200 || (pItem->GetProto()->Class == ITEM_CLASS_MISC && pItem->GetProto()->ItemLevel >= 80)))
+        {
+            PreparedStatement* stmt = ExtraDatabase.GetPreparedStatement(EXTRA_ADD_ITEMSTAT);
+            stmt->setUInt32(0, GetGUIDLow());
+            stmt->setUInt32(1, pItem->GetEntry());
+            stmt->setUInt32(2, 0);
+            ExtraDatabase.Execute(stmt);
+        }
+
         if (allowedLooters && pItem->GetProto()->GetMaxStackSize() == 1 && pItem->IsSoulBound())
         {
             pItem->SetSoulboundTradeable(allowedLooters, this, true);
@@ -12042,6 +12053,16 @@ void Player::DestroyItem(uint8 bag, uint8 slot, bool update)
                 RemoveAurasDueToSpell(proto->Spells[i].SpellId);
 
         ItemRemovedQuestCheck(pItem->GetEntry(), pItem->GetCount());
+
+        // Item Logging & Stats
+        if (pItem->GetProto()->Quality >= ITEM_QUALITY_EPIC && (pItem->GetProto()->ItemLevel >= 200 || (pItem->GetProto()->Class == ITEM_CLASS_MISC && pItem->GetProto()->ItemLevel >= 80)))
+        {
+            PreparedStatement* stmt = ExtraDatabase.GetPreparedStatement(EXTRA_ADD_ITEMSTAT);
+            stmt->setUInt32(0, GetGUIDLow());
+            stmt->setUInt32(1, pItem->GetEntry());
+            stmt->setUInt32(2, 1);
+            ExtraDatabase.Execute(stmt);
+        }
 
         if (bag == INVENTORY_SLOT_BAG_0)
         {

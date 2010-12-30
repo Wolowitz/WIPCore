@@ -18,10 +18,8 @@
 /* Script Data Start
 SDName: Boss_Skadi
 SDAuthor: LordVanMartin, JohnHoliver
-SD%Complete: 90%
-SDComment: <Known Bugs>
-               After Unmount() he appears to still be flying even with SetFlying(false)
-           </Known Bugs>
+SD%Complete: 100%
+SDComment: //
 SDCategory: Utgarde Pinnacle
 Script Data End */
 
@@ -284,7 +282,6 @@ public:
                 if (m_uiSpellHitCount >= 3)
                 {
                     Phase = SKADI;
-                    me->SetFlying(false);
                     me->Unmount();
                     if(Creature* pGrauf = me->SummonCreature(CREATURE_GRAUF, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 3*IN_MILLISECONDS))
                     {
@@ -298,6 +295,8 @@ public:
                     m_uiPoisonedSpearTimer = 10000;
                     m_uiWhirlwindTimer = 20000;
                     me->AI()->AttackStart(SelectTarget(SELECT_TARGET_RANDOM));
+                    DoStartMovement(me->getVictim());
+                    me->SetFlying(false);
                 }
             }
         }

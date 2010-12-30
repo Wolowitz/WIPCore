@@ -654,7 +654,10 @@ void Aura::Update(uint32 diff, Unit * caster)
                     if (powertype == POWER_HEALTH)
                     {
                         if (int32(caster->GetHealth()) > manaPerSecond)
+                        {
+                            caster->SendSpellNonMeleeDamageLog(caster, m_spellProto->Id, manaPerSecond, GetSpellSchoolMask(m_spellProto), 0, 0, false, 0, false);
                             caster->ModifyHealth(-manaPerSecond);
+                        }
                         else
                         {
                             Remove();
@@ -1357,14 +1360,6 @@ void Aura::HandleAuraSpecificMods(AuraApplication const * aurApp, Unit * caster,
 
                      // aura removed - remove death runes
                     target->ToPlayer()->RemoveRunesByAuraEffect(GetEffect(0));
-                }
-                switch(GetId())
-                {
-                    case 50514: // Summon Gargoyle
-                        if (removeMode != AURA_REMOVE_BY_EXPIRE)
-                            break;
-                        target->CastSpell(target, GetEffect(0)->GetAmount(), true, NULL, GetEffect(0));
-                        break;
                 }
                 break;
         }

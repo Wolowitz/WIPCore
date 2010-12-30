@@ -1678,7 +1678,13 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
         if (!sWorld->getBoolConfig(CONFIG_ALLOW_TWO_SIDE_INTERACTION_GUILD))
         {
             // Reset guild
-            trans->PAppend("DELETE FROM `guild_member` WHERE `guid`= '%u'", lowGuid);
+            uint32 glId = Player::GetGuildIdFromDB(lowGuid);
+
+            if (glId) {
+                Guild* targetGuild = sObjectMgr->GetGuildById(glId);
+                if (targetGuild)
+                    targetGuild->DeleteMember(lowGuid, false, true);
+            }
         }
 
         if (!sWorld->getBoolConfig(CONFIG_ALLOW_TWO_SIDE_ADD_FRIEND))

@@ -3979,6 +3979,33 @@ void SpellMgr::LoadSpellCustomAttr()
             spellInfo->DurationIndex = 21;
             count++;
             break;
+        case 49224: // Magic Suppression
+        case 49611:
+            spellInfo->procCharges = 0;
+            count++;
+            break;
+        case 45524: // Chains of Ice
+            spellInfo->EffectImplicitTargetA[2] = TARGET_UNIT_TARGET_ENEMY;
+            count++;
+            break;
+        case 18754: // Improved Seduction
+        case 18755:
+        case 18756:
+            spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CASTER;
+            count++;
+            break;
+        case 20467: // Judgement of Command
+            spellInfo->EffectBasePoints[1] = 19;
+            count++;
+            break;
+        case 59630:
+            spellInfo->AttributesEx3 |= SPELL_ATTR3_DEATH_PERSISTENT;
+            count++;
+            break;
+        case 64936:
+            spellInfo->EffectBasePoints[0] = 99;
+            count++;
+            break;
         default:
             break;
         }
