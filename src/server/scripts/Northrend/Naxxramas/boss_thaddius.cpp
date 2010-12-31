@@ -30,7 +30,7 @@ enum StalagSpells
 {
     SPELL_POWERSURGE        = 28134,
     H_SPELL_POWERSURGE      = 54529,
-    SPELL_MAGNETIC_PULL     = 28338,
+    SPELL_MAGNETIC_PULL     = 28337, //28338
     SPELL_STALAGG_TESLA     = 28097
 };
 
@@ -108,6 +108,8 @@ public:
     {
         boss_thaddiusAI(Creature *c) : BossAI(c, BOSS_THADDIUS)
         {
+            me->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_KNOCK_BACK, true);
+            me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_GRIP, true);
             // init is a bit tricky because thaddius shall track the life of both adds, but not if there was a wipe
             // and, in particular, if there was a crash after both adds were killed (should not respawn)
 
@@ -314,14 +316,12 @@ public:
 
                     if (pFeugenVictim && pStalaggVictim)
                     {
-                        // magnetic pull is not working. So just jump.
-
                         // reset aggro to be sure that feugen will not follow the jump
                         pFeugen->getThreatManager().modifyThreatPercent(pFeugenVictim, -100);
-                        pFeugenVictim->JumpTo(me, 0.3f);
+                        me->CastSpell(pFeugenVictim, SPELL_MAGNETIC_PULL, true);
 
                         me->getThreatManager().modifyThreatPercent(pStalaggVictim, -100);
-                        pStalaggVictim->JumpTo(pFeugen, 0.3f);
+                        pFeugen->CastSpell(pStalaggVictim, SPELL_MAGNETIC_PULL, true);
                     }
                 }
 
