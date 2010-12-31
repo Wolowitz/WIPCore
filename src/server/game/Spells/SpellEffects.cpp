@@ -6047,10 +6047,14 @@ void Spell::EffectKnockBack(SpellEffIndex effIndex)
 {
     if (!unitTarget)
         return;
-
+        
     // Instantly interrupt non melee spells being casted
     if (unitTarget->IsNonMeleeSpellCasted(true))
         unitTarget->InterruptNonMeleeSpells(true);
+
+    // Knock Back does not work on Rooted targets and, SOMETIMES, on stunned/incapacitated targets
+    if (unitTarget->HasUnitState(UNIT_STAT_ROOT))
+        return;
 
     // Typhoon
     if (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellFamilyFlags[1] & 0x01000000)
