@@ -121,7 +121,7 @@ public:
             me->SetReactState(REACT_AGGRESSIVE);
             uiEventStarterGUID = 0;
             nextWP = 0;
-            punishTimer = 2000;
+            punishTimer = 10000;
             nextMovementStarted = false;
             movementCompleted = false;
             movementStarted = false;
