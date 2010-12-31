@@ -83,6 +83,7 @@ public:
         GOState uiCollisionState;
 
         std::set<uint64> DwellerGUIDs;
+        std::vector<uint64> LivingMojoGUIDs;
 
         std::string str_data;
 
@@ -125,6 +126,7 @@ public:
             uiCollisionState = GO_STATE_READY;
 
             DwellerGUIDs.clear();
+            LivingMojoGUIDs.clear();
 
             memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
         }
@@ -149,6 +151,12 @@ public:
                 case CREATURE_RUIN_DWELLER:
                     if (creature->isAlive())
                         DwellerGUIDs.insert(creature->GetGUID());
+                    break;
+                case CREATURE_LIVING_MOJO:
+                    if (creature->isAlive())
+                        if (Creature* pDrakkari = instance->GetCreature(uiDrakkariColossus))
+                            if (creature->IsWithinDist(pDrakkari, 20.0f))
+                                LivingMojoGUIDs.push_back(creature->GetGUID());
                     break;
             }
         }
@@ -283,6 +291,12 @@ public:
                   GameObject* go = instance->GetGameObject(uiDrakkariColossusAltar);
                   if (go)
                       go->RemoveFlag(GAMEOBJECT_FLAGS,GO_FLAG_UNK1);
+                }
+                else if (data == NOT_STARTED)
+                {
+                    for (std::vector<uint64>::const_iterator itr = LivingMojoGUIDs.begin(); itr != LivingMojoGUIDs.end(); ++itr)
+                        if (Creature* pLivingMojo = instance->GetCreature(*itr))
+                            pLivingMojo->Respawn();
                 }
                 break;
             case DATA_GAL_DARAH_EVENT:

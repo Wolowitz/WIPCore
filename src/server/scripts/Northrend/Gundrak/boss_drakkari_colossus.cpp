@@ -105,10 +105,9 @@ public:
             if (!UpdateVictim())
                 return;
 
-            if (!bHealth && HealthBelowPct(50) && !HealthBelowPct(5))
+            if (!bHealth && HealthBelowPct(50))
             {
                 CreatureState(me, false);
-                DoCast(me,SPELL_FREEZE_ANIM);
                 DoCast(me,SPELL_EMERGE);
                 bHealth = true;
             }
@@ -183,23 +182,15 @@ public:
             me->RemoveFromWorld();
         }
 
-        void MovementInform(uint32 uiType, uint32 /*uiId*/)
-        {
-            if (uiType != POINT_MOTION_TYPE)
-                return;
-            if (Creature *pColossus = Unit::GetCreature(*me, pInstance ? pInstance->GetData64(DATA_DRAKKARI_COLOSSUS) : 0))
-            {
-                CAST_AI(boss_drakkari_colossus::boss_drakkari_colossusAI, pColossus->AI())->CreatureState(pColossus, true);
-                CAST_AI(boss_drakkari_colossus::boss_drakkari_colossusAI, pColossus->AI())->bHealth1 = false;
-            }
-            me->RemoveFromWorld();
-        }
-
         void UpdateAI(const uint32 diff)
         {
             //Return since we have no target
             if (!UpdateVictim())
+            {
+                if (Creature *pColossus = Unit::GetCreature(*me, pInstance ? pInstance->GetData64(DATA_DRAKKARI_COLOSSUS) : 0))
+                    CAST_AI(boss_drakkari_colossus::boss_drakkari_colossusAI, pColossus->AI())->CreatureState(pColossus, true);
                 return;
+            }
 
             if (!bGoToColossus && HealthBelowPct(50))
             {
@@ -209,8 +200,11 @@ public:
                     {
                         me->InterruptNonMeleeSpells(true);
                         DoCast(pColossus, SPELL_MERGE);
-                        bGoToColossus = true;
+                        if (Creature *pColossus = Unit::GetCreature(*me, pInstance ? pInstance->GetData64(DATA_DRAKKARI_COLOSSUS) : 0))
+                            CAST_AI(boss_drakkari_colossus::boss_drakkari_colossusAI, pColossus->AI())->CreatureState(pColossus, true);
+                        me->RemoveFromWorld();
                     }
+                    bGoToColossus = true;
                 }
             }
 

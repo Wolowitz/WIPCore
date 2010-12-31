@@ -47,7 +47,8 @@ enum mainCreatures
     CREATURE_MOORABI                              = 29305,
     CREATURE_GALDARAH                             = 29306,
     CREATURE_DRAKKARICOLOSSUS                     = 29307,
-    CREATURE_ECK                                  = 29932
+    CREATURE_ECK                                  = 29932,
+    CREATURE_LIVING_MOJO                          = 29830
 };
 
 #endif
