@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2008-2011 TrinityCore <http://www.trinitycore.org/>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -309,10 +309,10 @@ public:
         void UpdateAI(const uint32 uiDiff)
         {
             if (!UpdateVictim())
-                me->ForcedDespawn();
+                me->DespawnOrUnsummon();
             
             if (pInstance && pInstance->GetBossState(BOSS_AURIAYA) != IN_PROGRESS)
-                me->ForcedDespawn();
+                me->DespawnOrUnsummon();
 
             if (PounceTimer <= uiDiff)
             {
@@ -503,7 +503,7 @@ public:
         void UpdateAI(const uint32 uiDiff)
         {
             if (pInstance && pInstance->GetBossState(BOSS_AURIAYA) != IN_PROGRESS)
-                me->ForcedDespawn();
+                me->DespawnOrUnsummon();
         }
     };
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2008-2011 TrinityCore <http://www.trinitycore.org/>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -519,7 +519,7 @@ public:
                     if (pXT002->AI())
                         pXT002->AI()->DoAction(ACTION_ENTER_HARD_MODE);
 
-            me->ForcedDespawn();
+            me->DespawnOrUnsummon();
         }
 
         void UpdateAI(const uint32 diff)
@@ -623,7 +623,7 @@ public:
                         pXT002->AI()->DoAction(ACTION_DISABLE_NERF_ACHI);
 
                     // Despawns the scrapbot
-                    me->ForcedDespawn(500);
+                    me->DespawnOrUnsummon(500);
                 }
             }
         }
@@ -823,7 +823,7 @@ public:
         void UpdateAI(const uint32 diff)
         {
             if (m_pInstance && m_pInstance->GetBossState(BOSS_XT002) != IN_PROGRESS)
-                me->ForcedDespawn();
+                me->DespawnOrUnsummon();
 
             if (uiShockTimer <= diff)
             {

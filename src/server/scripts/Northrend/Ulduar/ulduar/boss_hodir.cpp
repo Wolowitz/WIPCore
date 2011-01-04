@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2008-2011 TrinityCore <http://www.trinitycore.org/>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -474,7 +474,7 @@ public:
             {
                 if (GameObject *pSnowdrift = me->FindNearestGameObject(194173, 2))
                     me->RemoveGameObject(pSnowdrift, true);
-                me->ForcedDespawn();
+                me->DespawnOrUnsummon();
             }
             else DespawnTimer -= diff;
         }
@@ -791,7 +791,7 @@ public:
             {
                 if (GameObject *pFire = me->FindNearestGameObject(194300, 4))
                     me->RemoveGameObject(pFire, true);
-                me->ForcedDespawn();
+                me->DespawnOrUnsummon();
             }
         }
 

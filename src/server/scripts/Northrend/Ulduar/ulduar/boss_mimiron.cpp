@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2008-2011 TrinityCore <http://www.trinitycore.org/>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -667,7 +667,7 @@ public:
                 return;
      
             for(std::list<Creature*>::iterator iter = m_pCreatures.begin(); iter != m_pCreatures.end(); ++iter)
-                (*iter)->ForcedDespawn();
+                (*iter)->DespawnOrUnsummon();
         }
         
     };
@@ -864,7 +864,7 @@ public:
                                 GetCreatureListWithEntryInGrid(m_pCreatures, me, npc, 100);
                                 if (!m_pCreatures.empty())
                                     for(std::list<Creature*>::iterator iter = m_pCreatures.begin(); iter != m_pCreatures.end(); ++iter)
-                                        (*iter)->ForcedDespawn(3000);
+                                        (*iter)->DespawnOrUnsummon(3000);
                             }
                             events.CancelEvent(EVENT_FLAME_SUPPRESSANT);
                             break;
@@ -943,7 +943,7 @@ public:
             if (!Boom && me->IsWithinDistInMap(who, 0.5f) && who->ToPlayer() && !who->ToPlayer()->isGameMaster())
             {
                 DoCastAOE(SPELL_EXPLOSION);
-                me->ForcedDespawn(1000);
+                me->DespawnOrUnsummon(1000);
                 Boom = true;
             }
         }
@@ -955,7 +955,7 @@ public:
                 if (!Boom)
                 {
                     DoCastAOE(SPELL_EXPLOSION);
-                    me->ForcedDespawn(1000);
+                    me->DespawnOrUnsummon(1000);
                     Boom = true;
                 }
             }
@@ -1177,7 +1177,7 @@ public:
         npc_rocket_strikeAI(Creature* pCreature) : Scripted_NoMovementAI(pCreature)
         {
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_PACIFIED);
-            me->ForcedDespawn(10000);
+            me->DespawnOrUnsummon(10000);
             DoCast(me, SPELL_ROCKET_STRIKE_AURA);
         }
     };
@@ -1438,7 +1438,7 @@ public:
         {
             DoCast(SPELL_MAGNETIC_CORE);
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_PACIFIED);
-            me->ForcedDespawn(21000);
+            me->DespawnOrUnsummon(21000);
             if (Creature *pAerialUnit = me->FindNearestCreature(NPC_AERIAL_UNIT, 20, true))
                 pAerialUnit->AI()->DoAction(DO_DISABLE_AERIAL);
         }
@@ -1535,7 +1535,7 @@ public:
                     GetCreatureListWithEntryInGrid(m_pCreatures, me, npc, 12);
                     if (!m_pCreatures.empty())
                         for(std::list<Creature*>::iterator iter = m_pCreatures.begin(); iter != m_pCreatures.end(); ++iter)
-                            (*iter)->ForcedDespawn();
+                            (*iter)->DespawnOrUnsummon();
                 }
                 uiSprayTimer = 5000;
             }
@@ -1629,7 +1629,7 @@ public:
         void UpdateAI(const uint32 uiDiff)
         {
             if (pInstance && pInstance->GetBossState(BOSS_MIMIRON) != IN_PROGRESS)
-                me->ForcedDespawn();
+                me->DespawnOrUnsummon();
         }
     };
 
@@ -1673,7 +1673,7 @@ public:
                     GetCreatureListWithEntryInGrid(m_pCreatures, me, npc, 25);
                     if (!m_pCreatures.empty())
                         for(std::list<Creature*>::iterator iter = m_pCreatures.begin(); iter != m_pCreatures.end(); ++iter)
-                            (*iter)->ForcedDespawn(1000);
+                            (*iter)->DespawnOrUnsummon(1000);
                 }
                 uiFrostTimer = 10000;
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2008-2011 TrinityCore <http://www.trinitycore.org/>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -387,7 +387,7 @@ public:
                             if (Elemental[2]->isDead())
                             {
                                 for (uint32 i = 0; i < 3; i++)
-                                    Elemental[i]->ForcedDespawn(3000);
+                                    Elemental[i]->DespawnOrUnsummon(3000);
                                 
                                 if (Creature* Freya = me->GetCreature(*me, instance->GetData64(DATA_FREYA)))
                                     Freya->AI()->DoAction(ACTION_ELEMENTAL);
@@ -819,7 +819,7 @@ public:
                     me->ToTempSummon()->GetSummoner()->RemoveAurasDueToSpell(SPELL_IRON_ROOTS);
             }
 
-            me->ForcedDespawn(2000);
+            me->DespawnOrUnsummon(2000);
         }
     };
 
@@ -939,7 +939,7 @@ public:
             {
                 DoCast(me, SPELL_LIFEBINDERS_GIFT, true);
                 me->SetFloatValue(OBJECT_FIELD_SCALE_X, 0);
-                me->ForcedDespawn(1000);
+                me->DespawnOrUnsummon(1000);
                 uiLifebindersGiftTimer = 12000;
             }
             else uiLifebindersGiftTimer -= diff;
@@ -985,7 +985,7 @@ public:
                 DoCast(me, SPELL_NATURE_BOMB);
                 if (GameObject* pBomb = me->FindNearestGameObject(OBJECT_NATURE_BOMB, 1))
                     me->RemoveGameObject(pBomb, true);
-                me->ForcedDespawn(2000);
+                me->DespawnOrUnsummon(2000);
                 uiExplosionTimer = 10000;
             }
             else uiExplosionTimer -= diff;

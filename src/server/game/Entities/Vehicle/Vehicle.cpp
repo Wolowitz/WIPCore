@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2008-2011 TrinityCore <http://www.trinitycore.org/>
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -199,7 +199,7 @@ void Vehicle::RemoveAllPassengers()
 
             // creature passengers mounted on player mounts should be despawned at dismount
             if (GetBase()->GetTypeId() == TYPEID_PLAYER && passenger->ToCreature())
-                passenger->ToCreature()->ForcedDespawn();
+                passenger->ToCreature()->DespawnOrUnsummon();
         }
 }
 
@@ -287,7 +287,7 @@ bool Vehicle::AddPassenger(Unit *unit, int8 seatId, bool byAura)
     if (seatId < 0) // no specific seat requirement
     {
         for (seat = m_Seats.begin(); seat != m_Seats.end(); ++seat)
-            if (!seat->second.passenger && (!(byAura && seat->second.seatInfo->CanEnterOrExit()) || (byAura && seat->second.seatInfo->IsUsableByAura())))
+            if (!seat->second.passenger && (!byAura && seat->second.seatInfo->CanEnterOrExit()) || (byAura && seat->second.seatInfo->IsUsableByAura()))
                 break;
 
         if (seat == m_Seats.end()) // no available seat

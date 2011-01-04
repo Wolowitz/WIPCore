@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2008-2011 TrinityCore <http://www.trinitycore.org/>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -596,6 +596,46 @@ class spell_gen_shroud_of_death : public SpellScriptLoader
         }
 };
 
+enum DivineStormSpell
+{
+    SPELL_DIVINE_STORM  = 53385,
+};
+
+// 70769 Divine Storm!
+class spell_gen_divine_storm_cd_reset : public SpellScriptLoader
+{
+public:
+    spell_gen_divine_storm_cd_reset() : SpellScriptLoader("spell_gen_divine_storm_cd_reset") {}
+
+    class spell_gen_divine_storm_cd_reset_SpellScript : public SpellScript
+    {
+        PrepareSpellScript(spell_gen_divine_storm_cd_reset_SpellScript)
+        bool Validate(SpellEntry const * /*spellEntry*/)
+        {
+            if (!sSpellStore.LookupEntry(SPELL_DIVINE_STORM))
+                return false;
+            return true;
+        }
+
+        void HandleScript(SpellEffIndex /*effIndex*/)
+        {
+            if (Player *caster = GetCaster()->ToPlayer())
+                if (caster->HasSpellCooldown(SPELL_DIVINE_STORM))
+                    caster->RemoveSpellCooldown(SPELL_DIVINE_STORM, true);
+        }
+
+        void Register()
+        {
+            OnEffect += SpellEffectFn(spell_gen_divine_storm_cd_reset_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_DUMMY);
+        }
+    };
+
+    SpellScript* GetSpellScript() const
+    {
+        return new spell_gen_divine_storm_cd_reset_SpellScript();
+    }
+};
+
 // 66313 Fire Bomb
 enum FireBombNPC
 {
@@ -822,6 +862,7 @@ void AddSC_generic_spell_scripts()
     new spell_pvp_trinket_wotf_shared_cd();
     new spell_gen_animal_blood();
     new spell_gen_shroud_of_death();
+    new spell_gen_divine_storm_cd_reset();
     new spell_gen_fire_bomb();
     new spell_gen_rapid_burst();
     new spell_gen_biting_cold();

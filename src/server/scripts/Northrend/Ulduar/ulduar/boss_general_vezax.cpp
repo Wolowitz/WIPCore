@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2008-2011 TrinityCore <http://www.trinitycore.org/>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -269,7 +269,7 @@ public:
                 return;
      
             for(std::list<Creature*>::iterator iter = m_pCreatures.begin(); iter != m_pCreatures.end(); ++iter)
-                (*iter)->ForcedDespawn();
+                (*iter)->DespawnOrUnsummon();
         }
     };
     
@@ -304,7 +304,7 @@ public:
                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_DISABLE_MOVE);
                 me->RemoveAllAuras();
                 me->SetHealth(me->GetMaxHealth());
-                me->ForcedDespawn(30000);
+                me->DespawnOrUnsummon(30000);
                 me->GetMotionMaster()->Initialize();
                 me->SetStandState(UNIT_STAND_STATE_DEAD);
                 DoCast(me, SPELL_SARONITE_VAPOR);

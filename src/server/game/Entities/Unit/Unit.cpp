@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2008-2011 TrinityCore <http://www.trinitycore.org/>
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -1731,7 +1731,7 @@ void Unit::CalcAbsorbResist(Unit *pVictim, SpellSchoolMask schoolMask, DamageEff
         int32 manaTaken = -pVictim->ModifyPower(POWER_MANA, -manaReduction);
 
         // take case when mana has ended up into account
-        currentAbsorb = int32(float(currentAbsorb)*(float(manaTaken) / float(manaReduction)));
+        currentAbsorb = currentAbsorb ? int32(float(currentAbsorb)*(float(manaTaken) / float(manaReduction))) : 0;
 
         dmgInfo.AbsorbDamage(currentAbsorb);
 
@@ -8583,6 +8583,12 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, AuraEffect* trig
         // Maelstrom Weapon
         case 53817:
         {
+            // Item - Shaman T10 Enhancement 4P Bonus
+            if (AuraEffect const* aurEff = GetAuraEffect(70832, 0))
+                if (Aura const* maelstrom = GetAura(53817))
+                    if ((maelstrom->GetStackAmount() == maelstrom->GetSpellProto()->StackAmount) && roll_chance_i(aurEff->GetAmount()))               
+                        CastSpell(this, 70831, true, castItem, triggeredByAura);
+
             // have rank dependent proc chance, ignore too often cases
             // PPM = 2.5 * (rank of talent),
             uint32 rank = sSpellMgr->GetSpellRank(auraSpellInfo->Id);
@@ -14280,10 +14286,10 @@ void Unit::RestoreDisplayId()
         {
             if (AuraApplication const * aurApp = (*i)->GetBase()->GetApplicationOfTarget(GetGUID()))
             {
-                if (aurApp->IsPositive())
+                if (!handledAura)
                     handledAura = (*i);
                 // prefer negative auras
-                else
+                if (!aurApp->IsPositive())
                 {
                     handledAura = (*i);
                     break;
