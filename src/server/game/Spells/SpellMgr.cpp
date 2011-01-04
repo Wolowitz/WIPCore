@@ -4030,6 +4030,9 @@ void SpellMgr::LoadSpellCustomAttr()
                 // Roar
                 else if (spellInfo->SpellFamilyFlags[0] & 0x8)
                     mSpellCustomAttr[i] |= SPELL_ATTR0_CU_AURA_CC;
+                // Entangling Roots
+                else if (spellInfo->SpellFamilyFlags[0] & 0x200)
+                    spellInfo->CastingTimeIndex = 1;
                 else
                     break;
                 count++;
