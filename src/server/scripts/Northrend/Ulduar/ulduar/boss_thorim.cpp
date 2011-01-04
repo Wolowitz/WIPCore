@@ -127,10 +127,10 @@ enum ArenaAdds
 
 #define NPC_SIF                                 33196
 
-const uint32 ARENA_PHASE_ADD[]                  = {32876, 32904, 32878, 32877, 32874, 32875, 33110};
+const uint32 ARENA_PHASE_ADD[]                  = {32876, 32877, 32878, 32904, 32874, 32875, 33110};
 #define SPELL_ARENA_PRIMARY(i)                  RAID_MODE(SPELL_ARENA_PRIMARY_N[i],SPELL_ARENA_PRIMARY_H[i])
-const uint32 SPELL_ARENA_PRIMARY_N[]            = {35054, 62326, 62327, 62322, 64151, 42724, 62333};
-const uint32 SPELL_ARENA_PRIMARY_H[]            = {35054, 62326, 62445, 62322, 64151, 42724, 62441};
+const uint32 SPELL_ARENA_PRIMARY_N[]            = {35054, 62322, 62327, 62326, 64151, 42724, 62333};
+const uint32 SPELL_ARENA_PRIMARY_H[]            = {35054, 62322, 62445, 62326, 64151, 42724, 62441};
 #define SPELL_ARENA_SECONDARY(i)                RAID_MODE(SPELL_ARENA_SECONDARY_N[i],SPELL_ARENA_SECONDARY_H[i])
 const uint32 SPELL_ARENA_SECONDARY_N[]          = {15578, 38313, 62321, 0, 62331, 62332, 62334};
 const uint32 SPELL_ARENA_SECONDARY_H[]          = {15578, 38313, 62529, 0, 62418, 62420, 62442};
@@ -203,11 +203,6 @@ const Position PosCharge[7] =
 {2145.81f, -222.196f, 419.573f, 4.45059f},
 {2123.91f, -222.443f, 419.573f, 4.97419f}
 };
-
-#define POS_X_ARENA  2181.19f
-#define POS_Y_ARENA  -299.12f
-
-#define IN_ARENA(who) (who->GetPositionX() < POS_X_ARENA && who->GetPositionY() > POS_Y_ARENA)
 
 struct SummonLocation
 {
@@ -351,12 +346,6 @@ public:
             if (!UpdateVictim())
                 return;
         
-            if (phase == PHASE_2 && !IN_ARENA(me))
-            {
-                EnterEvadeMode();
-                return;
-            }
-            
             events.Update(diff);
             EncounterTime += diff;
 
@@ -371,7 +360,7 @@ public:
                     {
                         case EVENT_STORMHAMMER:
                             if (Unit *pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 80, true))
-                                if (pTarget->isAlive() && IN_ARENA(pTarget))
+                                if (pTarget->isAlive() && pTarget->IsWithinLOSInMap(me))
                                     DoCast(pTarget, SPELL_STORMHAMMER);
                             events.ScheduleEvent(EVENT_STORMHAMMER, urand(15000, 20000), 0, PHASE_1);
                             break;
@@ -591,9 +580,7 @@ public:
             me->setFaction(14);
             for (uint8 i = 0; i < 7; ++i)
                 if (me->GetEntry() == ARENA_PHASE_ADD[i])
-                    id = ArenaAdds(i);
-                
-            IsInArena = IN_ARENA(me);
+                    id = ArenaAdds(i);                
         }
 
         InstanceScript* pInstance;
@@ -601,42 +588,7 @@ public:
         uint32 PrimaryTimer;
         uint32 SecondaryTimer;
         uint32 ChargeTimer;
-        bool IsInArena;
-
-        bool isOnSameSide(const Unit* pWho)
-        {
-            return (IsInArena == IN_ARENA(pWho));
-        }
     
-        void DamageTaken(Unit* attacker, uint32 &damage)
-        {
-            if (!isOnSameSide(attacker))
-                damage = 0;
-        }
-
-        void EnterEvadeMode()
-        {
-            Map* pMap = me->GetMap();
-            if (pMap->IsDungeon())
-            {
-                Map::PlayerList const &PlayerList = pMap->GetPlayers();
-                if (!PlayerList.isEmpty())
-                {
-                    for (Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
-                    {
-                        if (i->getSource() && i->getSource()->isAlive() && isOnSameSide(i->getSource()))
-                        {
-                            AttackStart(i->getSource());
-                            return;
-                        }
-                    }
-                }
-            }
-
-            me->StopMoving();
-            Reset();
-        }
-
         void Reset()
         {
             PrimaryTimer = urand(3000, 6000);
@@ -648,18 +600,24 @@ public:
         {
             if (id == DARK_RUNE_WARBRINGER)
                 DoCast(me, SPELL_AURA_OF_CELERITY);
+                
+            if (!me->IsWithinLOSInMap(me->getVictim()))
+            {
+                if (Unit* pTarget = me->SelectNearestTarget(45))
+                {
+                    me->getThreatManager().modifyThreatPercent(me->getVictim(), -100);
+                    me->AddThreat(pTarget, 100.0f);
+                }
+            }
         }
 
         void UpdateAI(const uint32 diff)
         {
-            if (!isOnSameSide(me) || (me->getVictim() && !isOnSameSide(me->getVictim())))
-            {
-                EnterEvadeMode();
-                return;
-            }
-            
             if (!UpdateVictim() || me->HasUnitState(UNIT_STAT_CASTING))
                 return;
+                
+            if (!me->IsWithinLOSInMap(me->getVictim()))
+                me->getThreatManager().modifyThreatPercent(me->getVictim(), -100);
             
             if (PrimaryTimer <= diff)
             {
