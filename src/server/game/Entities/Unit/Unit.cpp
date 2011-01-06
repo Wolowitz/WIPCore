@@ -6751,6 +6751,13 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, AuraEffect* trigger
                     basepoints0 = CalculatePctN(int32(damage), triggerAmount);
                     break;
                 }
+                // Paladin T8 Holy 2P Bonus
+                case 64890:
+                {
+                    triggered_spell_id = 64891;
+                    basepoints0 = CalculatePctN(int32(damage), int32(triggerAmount/3));
+                    break;
+                }
                 case 71406: // Tiny Abomination in a Jar
                 {
                     if (!pVictim || !pVictim->isAlive())
