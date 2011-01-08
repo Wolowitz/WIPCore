@@ -10289,6 +10289,11 @@ uint32 Unit::SpellDamageBonus(Unit *pVictim, SpellEntry const *spellProto, uint3
                     if (pVictim->GetDiseasesByCaster(owner->GetGUID()) > 0)
                         AddPctN(DoneTotalMod, aurEff->GetAmount());
 
+            // Sigil of the Vengeful Heart (Death Coil part)
+            if (spellProto->SpellFamilyFlags[0] & 0x2000)
+                if (AuraEffect * aurEff = GetAuraEffect(64962, 1))
+                    DoneTotal += aurEff->GetAmount();
+
             // Impurity (dummy effect)
             if (GetTypeId() == TYPEID_PLAYER)
             {
