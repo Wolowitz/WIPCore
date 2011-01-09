@@ -636,6 +636,76 @@ public:
     }
 };
 
+class spell_gen_gunship_portal : public SpellScriptLoader
+{
+public:
+    spell_gen_gunship_portal() : SpellScriptLoader("spell_gen_gunship_portal") { }
+
+    class spell_gen_gunship_portalSpellScript : public SpellScript
+    {
+        PrepareSpellScript(spell_gen_gunship_portalSpellScript)
+        void HandleScript(SpellEffIndex /*effIndex*/)
+        {
+            Unit* caster = GetCaster();
+            if (!caster->ToPlayer())
+                return;
+
+            if (Battleground *bg = caster->ToPlayer()->GetBattleground())
+            {
+                if (bg->GetTypeID(true) == BATTLEGROUND_IC)
+                    bg->DoAction(1,caster->GetGUID());
+            }
+        }
+
+        void Register()
+        {
+            OnEffect += SpellEffectFn(spell_gen_gunship_portalSpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        }
+    };
+
+    SpellScript* GetSpellScript() const
+    {
+        return new spell_gen_gunship_portalSpellScript();
+    }
+};
+
+enum parachuteIC
+{
+    SPELL_PARACHUTE_IC = 66657
+};
+
+class spell_gen_parachute_ic : public SpellScriptLoader
+{
+    public:
+        spell_gen_parachute_ic() : SpellScriptLoader("spell_gen_parachute_ic") { }
+
+        class spell_gen_parachute_icAuraScript : public AuraScript
+        {
+            PrepareAuraScript(spell_gen_parachute_icAuraScript)
+
+            void HandleTriggerSpell(AuraEffect const * /*aurEff*/)
+            {
+                Unit* target = GetTarget();
+
+                if (!target->ToPlayer())
+                    return;
+
+                if (target->ToPlayer()->m_movementInfo.fallTime > 2000)
+                    target->CastSpell(target,SPELL_PARACHUTE_IC,true);               
+            }
+
+            void Register()
+            {
+                OnEffectPeriodic += AuraEffectPeriodicFn(spell_gen_parachute_icAuraScript::HandleTriggerSpell, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+            }
+        };
+
+        AuraScript *GetAuraScript() const
+        {
+            return new spell_gen_parachute_icAuraScript();
+        }
+};
+
 // 66313 Fire Bomb
 enum FireBombNPC
 {
@@ -863,6 +933,8 @@ void AddSC_generic_spell_scripts()
     new spell_gen_animal_blood();
     new spell_gen_shroud_of_death();
     new spell_gen_divine_storm_cd_reset();
+    new spell_gen_parachute_ic();
+    new spell_gen_gunship_portal();
     new spell_gen_fire_bomb();
     new spell_gen_rapid_burst();
     new spell_gen_biting_cold();
