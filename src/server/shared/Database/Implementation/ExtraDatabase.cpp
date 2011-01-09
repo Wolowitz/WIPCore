@@ -22,17 +22,16 @@ bool ExtraDatabaseConnection::Open()
     if (!MySQLConnection::Open())
         return false;
 
-    m_stmts.resize(MAX_EXTRADATABASE_STATEMENTS);
+    if (!m_reconnecting)
+        m_stmts.resize(MAX_EXTRADATABASE_STATEMENTS);
 
-    /*
-        ##################################
-        LOAD YOUR PREPARED STATEMENTS HERE
-        ##################################
-    */
+    for (uint32 index = 0; index < MAX_EXTRADATABASE_STATEMENTS; ++index)
+    {
+        PreparedStatementTable const& pst = ExtraDatabasePreparedStatements[index];        
+        PrepareStatement(pst.index, pst.query, pst.type);
+    }
 
-    PrepareStatement(EXTRA_ADD_ITEMSTAT, "INSERT INTO item_stats (guid, item, state) VALUES (?, ?, ?)");
-    PrepareStatement(EXTRA_ADD_BGSTAT, "INSERT INTO battleground_stats (bg_id, winner) VALUES (?, ?)");
-    PrepareStatement(EXTRA_ADD_GMLOG, "INSERT INTO `gm_log` (`player`, `account`, `command`, `position`, `selected`) VALUES (?, ?, ?, ?, ?)");
+    m_statementTable = ExtraDatabasePreparedStatements;
 
     return true;
 }

@@ -49,4 +49,11 @@ enum ExtraDatabaseStatements
     MAX_EXTRADATABASE_STATEMENTS,
 };
 
+static const PreparedStatementTable ExtraDatabasePreparedStatements[] =
+{
+    {EXTRA_ADD_ITEMSTAT, "INSERT INTO item_stats (guid, item, state) VALUES (?, ?, ?)", CONNECTION_SYNCH},
+    {EXTRA_ADD_BGSTAT, "INSERT INTO battleground_stats (bg_id, winner) VALUES (?, ?)", CONNECTION_SYNCH},
+    {EXTRA_ADD_GMLOG, "INSERT INTO `gm_log` (`player`, `account`, `command`, `position`, `selected`) VALUES (?, ?, ?, ?, ?)", CONNECTION_SYNCH}
+};
+
 #endif
