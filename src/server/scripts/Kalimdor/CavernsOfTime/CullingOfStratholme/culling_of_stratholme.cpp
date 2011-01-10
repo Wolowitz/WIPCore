@@ -731,6 +731,8 @@ public:
                                 pInstance->DoUpdateWorldState(WORLD_STATE_WAVES, 0);
                                 uiStalkerGUID = pStalker->GetGUID();
                                 me->SetUInt64Value(UNIT_FIELD_TARGET, uiStalkerGUID);
+                                /*if (IsHeroic())
+                                    me->SummonCreature(NPC_INFINITE, 2335.47f, 1262.04f, 132.921f, 1.42079f, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 87000);*/
                             }
                             JumpToNextStep(1000);
                             break;
@@ -1204,6 +1206,20 @@ public:
         }
     };
 
+};
+
+class npc_chromie : public CreatureScript
+{
+public:
+    npc_chromie() : CreatureScript("npc_chromie") { }
+    
+    bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
+    {
+        pPlayer->PlayerTalkClass->ClearMenus();        
+        pPlayer->TeleportTo(595, 1811.29f, 1286.24f, 142.405f, 0); 
+        pPlayer->CLOSE_GOSSIP_MENU();
+        return true;
+    }
 };
 
 void AddSC_culling_of_stratholme()
