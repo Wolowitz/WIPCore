@@ -14766,6 +14766,17 @@ void Player::RewardQuest(Quest const *pQuest, uint32 reward, Object* questGiver,
 
     //lets remove flag for delayed teleports
     SetCanDelayTeleport(false);
+
+    // Custom Random Experience Boost Buff
+    if (XP > 0 && getLevel() < sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL))
+    {
+        uint8 boost_chance = 5;
+        if (urand(0,99) < boost_chance)
+        {
+            CastSpell(this, 29175, true);            // Cast Buff
+            CastSpell(this, 62003, true);            // Cast Visual Effect
+        }
+    }
 }
 
 void Player::FailQuest(uint32 questId)
