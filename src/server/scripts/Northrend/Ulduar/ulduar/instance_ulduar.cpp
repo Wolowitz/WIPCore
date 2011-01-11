@@ -40,16 +40,16 @@ const DoorData doorData[] =
 
 enum eGameObjects
 {
-    GO_Leviathan_DOOR       = 194630,
-    GO_Kologarn_BRIDGE      = 194232,
-    GO_Hodir_Rare_CHEST_10  = 194200,
-    GO_Hodir_Rare_CHEST_25  = 194201,
-    GO_Runic_DOOR           = 194557,
-    GO_Stone_DOOR           = 194558,
-    GO_Thorim_LEVER         = 194265,
-    GO_Mimiron_TRAM         = 194675,
-    GO_Mimiron_ELEVATOR     = 194749,
-    GO_Keepers_DOOR         = 194255
+    GO_LEVIATHAN_DOOR       = 194630,
+    GO_KOLOGARN_BRIDGE      = 194232,
+    GO_HODIR_RARE_CHEST_10  = 194200,
+    GO_HODIR_RARE_CHEST_25  = 194201,
+    GO_RUNIC_DOOR           = 194557,
+    GO_STONE_DOOR           = 194558,
+    GO_THORIM_LEVER         = 194265,
+    GO_MIMIRON_TRAM         = 194675,
+    GO_MIMIRON_ELEVATOR     = 194749,
+    GO_KEEPERS_DOOR         = 194255
 };
 
 class instance_ulduar : public InstanceMapScript
@@ -119,35 +119,35 @@ public:
             AddDoor(pGo, true);
             switch(pGo->GetEntry())
             {
-                case GO_Leviathan_DOOR:
+                case GO_LEVIATHAN_DOOR:
                     LeviathanDoorGUID = pGo->GetGUID();
                     break;
-                case GO_Kologarn_BRIDGE:
+                case GO_KOLOGARN_BRIDGE:
                     uiKologarnBridge = pGo->GetGUID();
                     HandleGameObject(uiKologarnBridge, true);
                     break;
-                case GO_Hodir_Rare_CHEST_10:
+                case GO_HODIR_RARE_CHEST_10:
                     HodirRareChestGUID = pGo->GetGUID();
                     break;
-                case GO_Hodir_Rare_CHEST_25:
+                case GO_HODIR_RARE_CHEST_25:
                     HodirRareChestGUID = pGo->GetGUID();
                     break;
-                case GO_Runic_DOOR:
+                case GO_RUNIC_DOOR:
                     RunicDoorGUID = pGo->GetGUID();
                     break;
-                case GO_Stone_DOOR:
+                case GO_STONE_DOOR:
                     StoneDoorGUID = pGo->GetGUID();
                     break;
-                case GO_Thorim_LEVER:
+                case GO_THORIM_LEVER:
                     ThorimLeverGUID = pGo->GetGUID();
                     break;
-                case GO_Mimiron_TRAM:
+                case GO_MIMIRON_TRAM:
                     MimironTramGUID = pGo->GetGUID();
                     break;
-                case GO_Mimiron_ELEVATOR:
+                case GO_MIMIRON_ELEVATOR:
                     MimironElevatorGUID = pGo->GetGUID();
                     break;
-                case GO_Keepers_DOOR: KeepersGateGUID = pGo->GetGUID();
+                case GO_KEEPERS_DOOR: KeepersGateGUID = pGo->GetGUID();
                 {
                     InstanceScript* pInstance = pGo->GetInstanceScript();
                     pGo->RemoveFlag(GAMEOBJECT_FLAGS,GO_FLAG_LOCKED);
@@ -339,6 +339,30 @@ public:
                 case DATA_LEVIATHAN_DOOR:
                     if (GameObject* pLeviathanDoor = instance->GetGameObject(LeviathanDoorGUID))
                         pLeviathanDoor->SetGoState(GOState(value));
+                    break;
+                case DATA_TOWER_DESTROYED:
+                    {
+                        if (Creature* pLeviathan = instance->GetCreature(uiLeviathan))
+                        {
+                            switch(value)
+                            {
+                                case 1: // Tower of Storms
+                                    pLeviathan->AI()->DoAction(1);
+                                    break;
+                                case 2: // Tower of Flames
+                                    pLeviathan->AI()->DoAction(2);
+                                    break;
+                                case 3: // Tower of Frost
+                                    pLeviathan->AI()->DoAction(3);
+                                    break;
+                                case 4: // Tower of Nature
+                                    pLeviathan->AI()->DoAction(4);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }
                     break;
                 case DATA_RUNIC_DOOR:
                     if (GameObject* pRunicDoor = instance->GetGameObject(RunicDoorGUID))
