@@ -467,4 +467,7 @@ void AddSC_boss_ignis()
     new npc_iron_construct();
     new npc_scorch_ground();
     new spell_ignis_slag_pot();
+
+    if (VehicleSeatEntry* vehSeat = const_cast<VehicleSeatEntry*>(sVehicleSeatStore.LookupEntry(3206)))
+        vehSeat->m_flags |= 0x400;
 }
