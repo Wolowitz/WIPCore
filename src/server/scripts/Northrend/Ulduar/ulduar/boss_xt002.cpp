@@ -503,6 +503,7 @@ public:
             m_pInstance = pCreature->GetInstanceScript();
             me->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_KNOCK_BACK, true);
             me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_GRIP, true);
+            me->SetReactState(REACT_PASSIVE);
         }
 
         InstanceScript* m_pInstance;
@@ -516,8 +517,7 @@ public:
         {
             if (m_pInstance)
                 if (Creature* pXT002 = me->GetCreature(*me, m_pInstance->GetData64(DATA_XT002)))
-                    if (pXT002->AI())
-                        pXT002->AI()->DoAction(ACTION_ENTER_HARD_MODE);
+                    pXT002->AI()->DoAction(ACTION_ENTER_HARD_MODE);
 
             me->DespawnOrUnsummon();
         }
@@ -623,7 +623,7 @@ public:
                         pXT002->AI()->DoAction(ACTION_DISABLE_NERF_ACHI);
 
                     // Despawns the scrapbot
-                    me->DespawnOrUnsummon(500);
+                    me->ForcedDespawn(500);
                 }
             }
         }
@@ -848,7 +848,4 @@ void AddSC_boss_xt002()
     new mob_void_zone();
     new mob_life_spark();
     new boss_xt002();
-    
-    if (VehicleSeatEntry* vehSeat = const_cast<VehicleSeatEntry*>(sVehicleSeatStore.LookupEntry(3004)))
-        vehSeat->m_flags |= 0x400;
 }

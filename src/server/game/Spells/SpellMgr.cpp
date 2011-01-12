@@ -3826,6 +3826,17 @@ void SpellMgr::LoadSpellCustomAttr()
             spellInfo->DurationIndex = 0;
             count++;
             break;
+        case 62713: // Ironbranch's Essence
+        case 62968: // Brightleaf's Essence
+            spellInfo->DurationIndex = 39;
+            count++;
+            break;
+        case 62661: // Searing Flames
+        case 61915: // Lightning Whirl 10
+        case 63483: // Lightning Whirl 25
+            spellInfo->InterruptFlags = 47;
+            count++;
+            break;
         case 16834: // Natural shapeshifter
         case 16835:
             spellInfo->DurationIndex = 21;
