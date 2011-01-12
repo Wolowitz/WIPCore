@@ -756,6 +756,7 @@ bool SpellMgr::_isPositiveEffect(uint32 spellId, uint32 effIndex, bool deep) con
                 case 34700: // Allergic Reaction
                 case 61987: // Avenging Wrath Marker
                 case 61988: // Divine Shield exclude aura
+                case 63322: // Saronite Vapors
                     return false;
                 case 30877: // Tag Murloc
                     return true;
