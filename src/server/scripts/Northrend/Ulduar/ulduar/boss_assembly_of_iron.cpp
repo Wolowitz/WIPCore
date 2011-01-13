@@ -322,11 +322,13 @@ public:
                     ++phase;
                     events.SetPhase(phase);
                     if (phase >= 2)
-                    events.RescheduleEvent(EVENT_STATIC_DISRUPTION, 30000);
+                        events.RescheduleEvent(EVENT_STATIC_DISRUPTION, 30000);
                     if (phase >= 3)
-                    events.RescheduleEvent(EVENT_OVERWHELMING_POWER, urand(2000, 5000));
-                    // Add HardMode Loot
-                    me->AddLootMode(LOOT_MODE_HARD_MODE_2);
+                    {
+                        events.RescheduleEvent(EVENT_OVERWHELMING_POWER, urand(2000, 5000));
+                        // Add HardMode Loot
+                        me->AddLootMode(LOOT_MODE_HARD_MODE_2);
+                    }
                     break;
             }
         }
@@ -497,9 +499,10 @@ public:
                     if (phase >= 2)
                         events.RescheduleEvent(EVENT_RUNE_OF_DEATH, 35000);
                     if (phase >= 3)
+                    {
                         events.RescheduleEvent(EVENT_RUNE_OF_SUMMONING, 40000);
-                    // Add HardMode Loot
-                    me->AddLootMode(LOOT_MODE_HARD_MODE_1);
+                        me->AddLootMode(LOOT_MODE_HARD_MODE_1);
+                    }
                     break;
             }
         }
@@ -647,6 +650,7 @@ public:
             if (pInstance)
                 pInstance->SetBossState(BOSS_ASSEMBLY, NOT_STARTED);
             me->RemoveAllAuras();
+            me->ResetLootMode();
             me->RemoveUnitMovementFlag(MOVEMENTFLAG_LEVITATING | MOVEMENTFLAG_WALKING);
             events.Reset();
             phase = 0;
@@ -797,6 +801,7 @@ public:
                     {
                         me->AddAura(SPELL_STORMSHIELD, me);
                         events.RescheduleEvent(EVENT_LIGHTNING_TENDRILS, 60000);
+                        me->AddLootMode(LOOT_MODE_HARD_MODE_1);
                     }
                     break;
             }
