@@ -319,7 +319,6 @@ public:
                     {
                         EldersCount++;
                         Brightleaf->SetInCombatWithZone();
-                        Brightleaf->CastSpell(Brightleaf, SPELL_BRIGHTLEAFS_ESSENCE, true);
                         Brightleaf->AddAura(SPELL_BRIGHTLEAFS_ESSENCE, Brightleaf);
                         Brightleaf->AddAura(SPELL_DRAINED_OF_POWER, Brightleaf);
                         events.ScheduleEvent(EVENT_BRIGHTLEAF, urand(15000, 30000));
@@ -330,7 +329,6 @@ public:
                     {
                         EldersCount++;
                         Ironbranch->SetInCombatWithZone();
-                        Ironbranch->CastSpell(Ironbranch, SPELL_IRONBRANCHS_ESSENCE, true);
                         Ironbranch->AddAura(SPELL_IRONBRANCHS_ESSENCE, Ironbranch);
                         Ironbranch->AddAura(SPELL_DRAINED_OF_POWER, Ironbranch);
                         events.ScheduleEvent(EVENT_IRONBRANCH, urand(45000, 60000));
@@ -340,9 +338,8 @@ public:
                     if (Stonebark->isAlive())
                     {
                         EldersCount++;
-                        me->AddAura(SPELL_STONEBARKS_ESSENCE, me);
                         Stonebark->SetInCombatWithZone();
-                        Stonebark->CastSpell(Stonebark, SPELL_STONEBARKS_ESSENCE, true);
+                        me->AddAura(SPELL_STONEBARKS_ESSENCE, me);
                         Stonebark->AddAura(SPELL_DRAINED_OF_POWER, Stonebark);
                         events.ScheduleEvent(EVENT_STONEBARK, urand(35000, 45000));
                     }
