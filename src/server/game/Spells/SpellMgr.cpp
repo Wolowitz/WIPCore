@@ -769,6 +769,11 @@ bool SpellMgr::_isPositiveEffect(uint32 spellId, uint32 effIndex, bool deep) con
             if (spellproto->SpellFamilyFlags[0] == 0x00002000)
                 return true;
             break;
+        case SPELLFAMILY_WARRIOR:
+            // Shockwave
+            if (spellId == 46968)
+                return false;
+            break;
         case SPELLFAMILY_PRIEST:
             switch (spellId)
             {
