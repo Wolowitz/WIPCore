@@ -2802,12 +2802,14 @@ void Spell::SelectEffectTargets(uint32 i, uint32 cur)
                     case 27285: // Seed of Corruption proc spell
                     case 49821: // Mind Sear proc spell Rank 1
                     case 53022: // Mind Sear proc spell Rank 2
+                    case 63025: // Gravity Bomb 10
+                    case 64233: // Gravity Bomb 25
                         unitList.remove(m_targets.getUnitTarget());
                         break;
                     case 55789: // Improved Icy Talons
                     case 59725: // Improved Spell Reflection - aoe aura
-                    case 28374: // Decimate
-                    case 54426: // Decimate
+                    case 28374: // Decimate 10
+                    case 54426: // Decimate 25
                         unitList.remove(m_caster);
                         break;
                     case 72378: // Blood Nova (Deathbringer Saurfang)
