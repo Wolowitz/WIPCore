@@ -601,7 +601,7 @@ public:
             if (id == DARK_RUNE_WARBRINGER)
                 DoCast(me, SPELL_AURA_OF_CELERITY);
                 
-            if (!me->IsWithinLOSInMap(me->getVictim()))
+            if (me->getVictim() && !me->IsWithinLOSInMap(me->getVictim()) && me->CanHaveThreatList())
             {
                 if (Unit* pTarget = me->SelectNearestTarget(45))
                 {
@@ -616,7 +616,7 @@ public:
             if (!UpdateVictim() || me->HasUnitState(UNIT_STAT_CASTING))
                 return;
                 
-            if (!me->IsWithinLOSInMap(me->getVictim()))
+            if (me->getVictim() && !me->IsWithinLOSInMap(me->getVictim()) && me->CanHaveThreatList())
                 me->getThreatManager().modifyThreatPercent(me->getVictim(), -100);
             
             if (PrimaryTimer <= diff)
