@@ -1047,6 +1047,8 @@ void Aura::HandleAuraSpecificMods(AuraApplication const * aurApp, Unit * caster,
                 }
                 break;
             case SPELLFAMILY_DRUID:
+                if (!caster)
+                    break;
                 // Rejuvenation
                 if (GetSpellProto()->SpellFamilyFlags[0] & 0x10 && GetEffect(0))
                 {
