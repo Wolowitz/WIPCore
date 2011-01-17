@@ -1913,18 +1913,16 @@ void Spell::EffectJumpDest(SpellEffIndex effIndex)
 
 void Spell::CalculateJumpSpeeds(uint8 i, float dist, float & speedXY, float & speedZ)
 {
-    if (m_spellInfo->EffectMiscValueB[i])
-        speedZ = float(m_spellInfo->EffectMiscValueB[i])/10;
+    if (m_spellInfo->EffectMiscValue[i] && m_spellInfo->EffectMiscValueB[i])
+    {
+        speedZ = float(m_spellInfo->EffectMiscValueB[i]) / 10;
+        speedXY = dist * float(m_spellInfo->EffectMiscValue[i]) / speedZ;
+    }
     else
+    {
         speedZ = 10.0f;
-
-    if (m_spellInfo->EffectValueMultiplier[i] > 0)
-        speedZ *= m_spellInfo->EffectValueMultiplier[i];
-
-    if (m_spellInfo->EffectMiscValue[i])
-        speedXY = float(m_spellInfo->EffectMiscValue[i])/10;
-    else
-        speedXY = dist * 10.0f / speedZ;
+        speedXY = dist * 6.0f / speedZ;
+    }
 }
 
 void Spell::EffectTeleportUnits(SpellEffIndex /*effIndex*/)
