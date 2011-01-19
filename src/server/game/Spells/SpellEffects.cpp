@@ -1920,8 +1920,8 @@ void Spell::CalculateJumpSpeeds(uint8 i, float dist, float & speedXY, float & sp
     }
     else
     {
-        speedZ = 10.0f;
-        speedXY = dist * 6.0f / speedZ;
+        speedZ = 15.0f;
+        speedXY = dist * 10.0f / speedZ;
     }
 }
 
