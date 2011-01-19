@@ -1262,11 +1262,11 @@ void Battleground::EventPlayerLoggedOut(Player* player)
 
         // 1 player is logging out, if it is the last, then end arena!
         if (isArena())
-            if (!GetAlivePlayersCountByTeam(player->GetTeam()) && GetPlayersCountByTeam(GetOtherTeam(player->GetTeam())))
+            if (GetAlivePlayersCountByTeam(player->GetTeam()) <= 1 && GetPlayersCountByTeam(GetOtherTeam(player->GetTeam())))
                 EndBattleground(GetOtherTeam(player->GetTeam()));
     }
-    // a crash mustn't add Deserter debuff...
-    //player->LeaveBattleground();
+
+    player->LeaveBattleground();
 }
 
 /* This method should be called only once ... it adds pointer to queue */
