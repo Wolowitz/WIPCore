@@ -267,7 +267,7 @@ public:
                 {
                     case EVENT_FREEZE:
                         DoCastAOE(SPELL_FREEZE);
-                        events.ScheduleEvent(EVENT_FREEZE, urand(30000, 35000));
+                        events.CancelEvent(EVENT_FREEZE);
                         break;
                     case EVENT_ICICLE:
                         if (Unit *pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
@@ -288,6 +288,7 @@ public:
                         }
                         DoCast(SPELL_FLASH_FREEZE);
                         events.RescheduleEvent(EVENT_ICICLE, 15000);
+                        events.ScheduleEvent(EVENT_FREEZE, urand(30000, 35000));
                         events.ScheduleEvent(EVENT_FLASH_CAST, 50000);
                         events.ScheduleEvent(EVENT_FLASH_EFFECT, 9000);
                         break;
