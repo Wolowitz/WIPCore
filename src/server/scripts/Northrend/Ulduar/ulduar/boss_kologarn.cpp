@@ -19,7 +19,7 @@
 SDName: Kologarn
 SDAuthor: PrinceCreed
 SD%Complete: 100%
-SD%Comments:
+SD%Comments: Kologarn's vehicleid is wrong.
 EndScriptData */
 
 #include "ScriptPCH.h"
@@ -334,6 +334,8 @@ public:
                     if (Unit* LeftArm = me->SummonCreature(NPC_LEFT_ARM, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation()))
                     {
                         LeftArm->EnterVehicle(vehicle, 0);
+                        LeftArm->DestroyForNearbyPlayers();
+                        LeftArm->UpdateObjectVisibility(false);
                         DoCast(me, SPELL_ARM_RESPAWN, true);
                         me->MonsterTextEmote(EMOTE_LEFT, 0, true);
                         if (instance)
@@ -345,6 +347,8 @@ public:
                     if (Unit* RightArm = me->SummonCreature(NPC_RIGHT_ARM, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation()))
                     {
                         RightArm->EnterVehicle(vehicle, 1);
+                        RightArm->DestroyForNearbyPlayers();
+                        RightArm->UpdateObjectVisibility(false);
                         DoCast(me, SPELL_ARM_RESPAWN, true);
                         me->MonsterTextEmote(EMOTE_RIGHT, 0, true);
                         if (instance)
