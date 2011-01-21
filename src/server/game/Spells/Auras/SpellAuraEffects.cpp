@@ -4403,7 +4403,6 @@ void AuraEffect::HandleModStateImmunityMask(AuraApplication const * aurApp, uint
         target->ApplySpellImmune(GetId(), IMMUNITY_ID, 68766, apply);   // Desecration Rank 2
         target->ApplySpellImmune(GetId(), IMMUNITY_ID, 605, apply);     // Mind Control
         target->ApplySpellImmune(GetId(), IMMUNITY_STATE, SPELL_AURA_TRANSFORM, apply);
-        target->ApplySpellImmune(GetId(), IMMUNITY_EFFECT, SPELL_EFFECT_KNOCK_BACK, apply);
         target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, IMMUNE_TO_MOVEMENT_IMPAIRMENT_AND_LOSS_CONTROL_MASK, apply);
     }
 

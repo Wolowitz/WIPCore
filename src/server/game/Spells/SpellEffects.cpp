@@ -6106,7 +6106,7 @@ void Spell::EffectKnockBack(SpellEffIndex effIndex)
         unitTarget->InterruptNonMeleeSpells(true);
 
     // Knock Back does not work on Rooted targets and, SOMETIMES, on stunned/incapacitated targets
-    if (unitTarget->HasUnitState(UNIT_STAT_ROOT))
+    if (unitTarget->HasUnitState(UNIT_STAT_ROOT) || unitTarget->HasAura(46924))
         return;
 
     // Typhoon
