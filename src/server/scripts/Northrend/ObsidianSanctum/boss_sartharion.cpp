@@ -918,13 +918,15 @@ public:
         uint32 m_uiHatchEggTimer;
         bool m_bHasPortalOpen;
         uint32 Eggs;
-
+		bool cantLoot;
+		
         void Reset()
         {         
             m_uiShadowBreathTimer = 20000;
             m_uiShadowFissureTimer = 5000;
             m_uiHatchEggTimer = 30000;
             m_bHasPortalOpen = false;
+			me->ResetLootMode();
         }
 
         void Aggro(Unit* pWho)
@@ -933,6 +935,12 @@ public:
             DoZoneInCombat();
             DoCast(me, SPELL_POWER_OF_TENEBRON);
         }
+		
+		void EnterCombat(Unit* pWho) 
+		{
+			if(!cantLoot)
+				me->SetLootMode(2);
+		}		
 
         void DoAction(const int32 action)
         {
@@ -943,7 +951,12 @@ public:
                     break;
             }
         }
-
+		
+		void JustDied(Unit* pKiller)
+        {
+		   cantLoot = true;
+        }
+		
         void JustSummoned(Creature *summon)
         {
             Eggs = 6;
@@ -1036,7 +1049,8 @@ public:
         uint32 m_uiAcolyteShadronTimer;
         bool m_bHasPortalOpen;
         SummonList lSummons;
-
+		bool cantLoot;
+	
         void Reset()
         {
             m_uiShadowBreathTimer = 20000;
@@ -1050,6 +1064,8 @@ public:
 
             if (me->HasAura(SPELL_GIFT_OF_TWILIGTH_SHA))
                 me->RemoveAurasDueToSpell(SPELL_GIFT_OF_TWILIGTH_SHA);
+
+			me->ResetLootMode();
         }
 
         void Aggro(Unit* pWho)
@@ -1058,6 +1074,12 @@ public:
             DoZoneInCombat();
             DoCast(me, SPELL_POWER_OF_SHADRON);
         }
+		
+		void EnterCombat(Unit* pWho) 
+		{
+			if(!cantLoot)
+				me->SetLootMode(2);
+		}
 
         void JustDied(Unit* pKiller)
         {
@@ -1069,6 +1091,8 @@ public:
                 TeleportBack();
                 lSummons.DespawnAll();
             }
+			
+			cantLoot = true;
         }
 
         void JustSummoned(Creature *summon)
@@ -1177,14 +1201,16 @@ public:
         uint32 m_uiAcolyteVesperonTimer;    
         bool m_bHasPortalOpen;    
         SummonList lSummons;
-
-        void Reset()
+		bool cantLoot;
+		
+		void Reset()
         {
             lSummons.DespawnAll();
             m_uiShadowBreathTimer = 20000;
             m_uiShadowFissureTimer = 5000;
             m_uiAcolyteVesperonTimer = 60000;        
-            m_bHasPortalOpen = false;       
+            m_bHasPortalOpen = false;  
+			me->ResetLootMode();
         }
 
         void Aggro(Unit* pWho)
@@ -1193,6 +1219,12 @@ public:
             DoZoneInCombat();
             DoCast(me, SPELL_POWER_OF_VESPERON);
         }
+		
+		void EnterCombat(Unit* pWho) 
+		{
+			if(!cantLoot)
+				me->SetLootMode(2);
+		}
 
         void JustDied(Unit* pKiller)
         {
@@ -1206,6 +1238,8 @@ public:
                 pInstance->DoRemoveAurasDueToSpellOnPlayers(SPELL_TWILIGHT_TORMENT_STACKS);
                 pInstance->DoRemoveAurasDueToSpellOnPlayers(SPELL_TWILIGHT_TORMENT_VESP);
             }
+			
+			cantLoot = true;
         }
 
         void KilledUnit(Unit* pVictim)
