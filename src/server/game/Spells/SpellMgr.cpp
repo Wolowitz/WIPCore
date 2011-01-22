@@ -4039,6 +4039,7 @@ void SpellMgr::LoadSpellCustomAttr()
             break;
         case 49224: // Magic Suppression
         case 49611:
+        case 57935: // Twilight Torment
             spellInfo->procCharges = 0;
             count++;
             break;
