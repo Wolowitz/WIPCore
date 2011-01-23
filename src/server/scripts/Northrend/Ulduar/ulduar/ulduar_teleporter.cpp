@@ -101,7 +101,7 @@ public:
 
         pPlayer->ADD_GOSSIP_ITEM(0, "Expedition Base Camp", GOSSIP_SENDER_MAIN, BASE_CAMP);
         //pPlayer->ADD_GOSSIP_ITEM(0, "Formation Grounds", GOSSIP_SENDER_MAIN, GROUNDS);
-        if (pInstance->GetBossState(BOSS_LEVIATHAN) == DONE || pPlayer->isGameMaster())
+        //if (pInstance->GetBossState(BOSS_LEVIATHAN) == DONE || pPlayer->isGameMaster())
         {
             pPlayer->ADD_GOSSIP_ITEM(0, "Colossal Forge", GOSSIP_SENDER_MAIN, FORGE);
             if (pInstance->GetBossState(BOSS_XT002) == DONE || pPlayer->isGameMaster())

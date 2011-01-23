@@ -91,6 +91,16 @@ public:
                 summon->AI()->AttackStart(me);
             summons.Summon(summon);
         }
+        
+        void JustDied(Unit* /*Killer*/)
+        {
+            _JustDied();
+        }
+        
+        void Reset()
+        {
+            _Reset();
+        }
 
         void UpdateAI(const uint32 diff)
         {
