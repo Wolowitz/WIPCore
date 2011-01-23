@@ -16517,8 +16517,8 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
         }
     }
 
-    // if the player is in an instance and it has been reset in the meantime teleport him to the entrance
-    if (instanceId && !sInstanceSaveMgr->GetInstanceSave(instanceId))
+    // if the player is in an instance (not a bg) and it has been reset in the meantime teleport him to the entrance
+    if (!m_bgData.bgInstanceID && instanceId && !sInstanceSaveMgr->GetInstanceSave(instanceId))
     {
         AreaTrigger const* at = sObjectMgr->GetMapEntranceTrigger(mapId);
         if (at)
