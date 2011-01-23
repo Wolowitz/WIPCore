@@ -172,7 +172,7 @@ public:
             LiveTriggerGUID.clear();
             DeadTriggerGUID.clear();
 
-            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE|UNIT_FLAG_DISABLE_MOVE);
+            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE|UNIT_FLAG_DISABLE_MOVE|UNIT_FLAG_NOT_SELECTABLE);
             me->SetReactState(REACT_PASSIVE);
             if (instance)
                 instance->SetData(DATA_GOTHIK_GATE, GO_STATE_ACTIVE);
