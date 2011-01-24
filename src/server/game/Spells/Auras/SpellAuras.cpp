@@ -1059,6 +1059,13 @@ void Aura::HandleAuraSpecificMods(AuraApplication const * aurApp, Unit * caster,
                         caster->CastCustomSpell(target, 64801, &basepoints0, NULL, NULL, true, NULL, GetEffect(0));
                     }
                 }
+                // Faerie Fire (Feral)
+                else if (GetSpellProto()->Id == 16857)
+                {
+                    // Causes damage and threat in bear form or dire bear form only
+                    if (caster->GetShapeshiftForm() != FORM_CAT)
+                        caster->CastSpell(target, 60089, true);
+                }
                 break;
             case SPELLFAMILY_ROGUE:
                 // Sprint (skip non player casted spells by category)
