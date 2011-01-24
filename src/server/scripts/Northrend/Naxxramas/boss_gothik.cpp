@@ -172,7 +172,7 @@ public:
             LiveTriggerGUID.clear();
             DeadTriggerGUID.clear();
 
-            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE|UNIT_FLAG_DISABLE_MOVE);
+            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE|UNIT_FLAG_DISABLE_MOVE|UNIT_FLAG_NOT_SELECTABLE);
             me->SetReactState(REACT_PASSIVE);
             if (instance)
                 instance->SetData(DATA_GOTHIK_GATE, GO_STATE_ACTIVE);
@@ -199,7 +199,7 @@ public:
             }
 
             _EnterCombat();
-            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE|UNIT_FLAG_DISABLE_MOVE);
+            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE|UNIT_FLAG_DISABLE_MOVE|UNIT_FLAG_NOT_SELECTABLE);
             waveCount = 0;
             events.ScheduleEvent(EVENT_SUMMON, 30000);
             DoTeleportTo(PosPlatform);
@@ -443,7 +443,7 @@ public:
                             DoScriptText(SAY_TELEPORT, me);
                             DoTeleportTo(PosGroundLiveSide);
                             me->SetReactState(REACT_AGGRESSIVE);
-                            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE);
+                            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE|UNIT_FLAG_NOT_SELECTABLE);
                             summons.DoAction(0, 0);
                             summons.DoZoneInCombat();
                             events.ScheduleEvent(EVENT_BOLT, 1000);
