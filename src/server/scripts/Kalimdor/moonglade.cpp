@@ -29,6 +29,7 @@ npc_great_bear_spirit
 npc_silva_filnaveth
 npc_clintar_spirit
 npc_clintar_dreamwalker
+npc_omen
 EndContentData */
 
 #include "ScriptPCH.h"
@@ -48,6 +49,14 @@ enum eBunthen
 
 #define GOSSIP_ITEM_THUNDER     "I'd like to fly to Thunder Bluff."
 #define GOSSIP_ITEM_AQ_END      "Do you know where I can find Half Pendant of Aquatic Endurance?"
+
+enum eOmen
+{
+    QUEST_ELUNE_S_BLESSING      = 8868,
+    SPELL_STARFALL              = 37124,
+    SPELL_CLEAVE                = 43273,
+    SPELL_SPOTLIGHT             = 25824
+};
 
 class npc_bunthen_plainswind : public CreatureScript
 {
@@ -577,8 +586,74 @@ public:
 };
 
 /*####
-#
+# npc_omen
 ####*/
+
+class npc_omen : public CreatureScript
+{
+public:
+    npc_omen() : CreatureScript("npc_omen") { }
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new npc_omenAI (pCreature);
+    }
+
+    struct npc_omenAI : public ScriptedAI
+    {
+        npc_omenAI(Creature *c) : ScriptedAI(c)
+        {
+            me->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_KNOCK_BACK, true);
+            me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_GRIP, true);
+        }
+
+        uint32 StarfallTimer;
+        uint32 CleaveTimer;
+
+        void Reset()
+        {
+            StarfallTimer = 35000;
+            CleaveTimer = 10000;
+        }
+
+        void JustDied(Unit* /*victim*/)
+        {
+            DoCast(me, SPELL_SPOTLIGHT, true);
+        }
+
+        void DamageTaken(Unit* pKiller, uint32 &damage)
+        {
+            if (damage >= me->GetHealth())
+            {
+                if (pKiller->ToPlayer())
+                    pKiller->ToPlayer()->GroupEventHappens(QUEST_ELUNE_S_BLESSING, me);
+            }
+        }
+
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+                return;
+
+            if (StarfallTimer <= diff)
+            {
+                DoCast(me, SPELL_STARFALL, true);
+                StarfallTimer = urand(30000, 40000);
+            }  
+            else StarfallTimer -= diff;
+
+            if (CleaveTimer <= diff)
+            {
+                DoCastVictim(SPELL_CLEAVE, true);
+                CleaveTimer = 10000;
+            }  
+            else CleaveTimer -= diff;
+
+            DoMeleeAttackIfReady();
+        }
+    };
+
+};
 
 void AddSC_moonglade()
 {
@@ -587,4 +662,5 @@ void AddSC_moonglade()
     new npc_silva_filnaveth();
     new npc_clintar_dreamwalker();
     new npc_clintar_spirit();
+    new npc_omen();
 }
