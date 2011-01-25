@@ -19,7 +19,7 @@
 /* ScriptData
 SDName: Moonglade
 SD%Complete: 100
-SDComment: Quest support: 30, 272, 5929, 5930, 10965. Special Flight Paths for Druid class.
+SDComment: Quest support: 30, 272, 5929, 5930, 8868, 10965. Special Flight Paths for Druid class.
 SDCategory: Moonglade
 EndScriptData */
 
@@ -52,10 +52,11 @@ enum eBunthen
 
 enum eOmen
 {
-    QUEST_ELUNE_S_BLESSING      = 8868,
     SPELL_STARFALL              = 37124,
     SPELL_CLEAVE                = 43273,
-    SPELL_SPOTLIGHT             = 25824
+    SPELL_MOONLIGHT             = 26392,
+    SPELL_ELUNE_S_BLESSING      = 26393,
+    SPELL_ELUNE_QUEST_CREDIT    = 26394
 };
 
 class npc_bunthen_plainswind : public CreatureScript
@@ -618,16 +619,7 @@ public:
 
         void JustDied(Unit* /*victim*/)
         {
-            DoCast(me, SPELL_SPOTLIGHT, true);
-        }
-
-        void DamageTaken(Unit* pKiller, uint32 &damage)
-        {
-            if (damage >= me->GetHealth())
-            {
-                if (pKiller->ToPlayer())
-                    pKiller->ToPlayer()->GroupEventHappens(QUEST_ELUNE_S_BLESSING, me);
-            }
+            DoCast(me, SPELL_MOONLIGHT, true);
         }
 
         void UpdateAI(const uint32 diff)
@@ -655,6 +647,33 @@ public:
 
 };
 
+class npc_moonlight : public CreatureScript
+{
+public:
+    npc_moonlight() : CreatureScript("npc_moonlight") { }
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new npc_moonlightAI (pCreature);
+    }
+
+    struct npc_moonlightAI : public Scripted_NoMovementAI
+    {
+        npc_moonlightAI(Creature *c) : Scripted_NoMovementAI(c)
+        {
+            DoCast(me, SPELL_ELUNE_S_BLESSING, true);
+        }
+
+        void MoveInLineOfSight(Unit *who)
+        {
+            if (who->ToPlayer() && !who->ToPlayer()->isGameMaster() && who->IsWithinDist(me, 20.0f))
+                if (who->ToPlayer()->GetQuestStatus(8868) == QUEST_STATUS_INCOMPLETE)
+                    who->CastSpell(who, SPELL_ELUNE_QUEST_CREDIT, true);
+        }
+    };
+
+};
+
 void AddSC_moonglade()
 {
     new npc_bunthen_plainswind();
@@ -663,4 +682,5 @@ void AddSC_moonglade()
     new npc_clintar_dreamwalker();
     new npc_clintar_spirit();
     new npc_omen();
+    new npc_moonlight();
 }

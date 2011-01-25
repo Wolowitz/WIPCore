@@ -1,0 +1,1 @@
+UPDATE `creature_template` SET `ScriptName` = 'npc_moonlight' WHERE `entry` = 15902;
