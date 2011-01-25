@@ -8102,14 +8102,7 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, AuraEffect* trig
                         return false;
 
                     basepoints0 = CalculatePctN(int32(damage), triggerAmount) / (GetSpellMaxDuration(TriggerPS) / TriggerPS->EffectAmplitude[0]);
-                    AuraEffectList const& DoTAuras = target->GetAuraEffectsByType(SPELL_AURA_PERIODIC_DAMAGE);
-                    for (Unit::AuraEffectList::const_iterator i = DoTAuras.begin(); i != DoTAuras.end(); ++i)
-                    {
-                        if ((*i)->GetCasterGUID() != GetGUID() || (*i)->GetId() != 63468 || (*i)->GetEffIndex() != 0)
-                            continue;
-                        basepoints0 += ((*i)->GetAmount() * ((*i)->GetTotalTicks() - ((*i)->GetTickNumber()))) / (*i)->GetTotalTicks();
-                        break;
-                    }
+                    basepoints0 += pVictim->GetRemainingDotDamage(GetGUID(), trigger_spell_id);
                     break;
                 }
                 break;
