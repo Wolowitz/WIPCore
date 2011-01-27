@@ -28,7 +28,7 @@ class ExtraDatabaseConnection : public MySQLConnection
         ExtraDatabaseConnection(MySQLConnectionInfo& connInfo) : MySQLConnection(connInfo) {}
         ExtraDatabaseConnection(ACE_Activation_Queue* q, MySQLConnectionInfo& connInfo) : MySQLConnection(q, connInfo) {}
 
-        //- Loads databasetype specific prepared statements
+        //- Loads database type specific prepared statements
         bool Open();
 };
 
@@ -47,13 +47,6 @@ enum ExtraDatabaseStatements
     EXTRA_ADD_GMLOG,
 
     MAX_EXTRADATABASE_STATEMENTS,
-};
-
-static const PreparedStatementTable ExtraDatabasePreparedStatements[] =
-{
-    {EXTRA_ADD_ITEMSTAT, "INSERT INTO item_stats (guid, item, state) VALUES (?, ?, ?)", CONNECTION_ASYNC},
-    {EXTRA_ADD_BGSTAT, "INSERT INTO battleground_stats (bg_id, winner) VALUES (?, ?)", CONNECTION_ASYNC},
-    {EXTRA_ADD_GMLOG, "INSERT INTO `gm_log` (`player`, `account`, `command`, `position`, `selected`) VALUES (?, ?, ?, ?, ?)", CONNECTION_ASYNC}
 };
 
 #endif

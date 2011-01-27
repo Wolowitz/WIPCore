@@ -2801,10 +2801,6 @@ void Spell::SelectEffectTargets(uint32 i, uint32 cur)
                     unitList.remove(m_targets.getUnitTarget());
                 Trinity::RandomResizeList(unitList, maxTargets);
             }
-                    case 63025: // Gravity Bomb 10
-                    case 64233: // Gravity Bomb 25
-                    case 28374: // Decimate 10
-                    case 54426: // Decimate 25
 
             CallScriptAfterUnitTargetSelectHandlers(unitList, SpellEffIndex(i));
 
