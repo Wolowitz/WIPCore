@@ -443,12 +443,14 @@ float PetAI::CalculateFollowDistance()
     CreatureInfo const *cinfo = me->GetCreatureInfo();
     switch (cinfo->family)
     {
+        case CREATURE_FAMILY_DEVILSAUR:
+            distance = -2.0f;
+            break;
         case CREATURE_FAMILY_CHIMAERA:
         case CREATURE_FAMILY_SPIDER:
-        case CREATURE_FAMILY_DEVILSAUR:
         case CREATURE_FAMILY_CORE_HOUND:
         case CREATURE_FAMILY_RHINO:
-            distance = -5.0f;
+            distance = -4.0f;
             break;
         default:
             distance = PET_FOLLOW_DIST;
