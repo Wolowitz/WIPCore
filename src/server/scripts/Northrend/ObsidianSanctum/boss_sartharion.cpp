@@ -1348,6 +1348,7 @@ public:
             }
             else
             {
+
                 if (pInstance)
                 {
                     Creature* Shadron = pInstance->instance->GetCreature(pInstance->GetData64(DATA_SHADRON));

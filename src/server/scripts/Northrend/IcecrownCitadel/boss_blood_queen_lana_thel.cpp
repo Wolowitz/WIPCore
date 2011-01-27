@@ -139,7 +139,7 @@ class boss_blood_queen_lana_thel : public CreatureScript
 
             void Reset()
             {
-                events.Reset();
+                _Reset();
                 events.ScheduleEvent(EVENT_BERSERK, 330000);
                 events.ScheduleEvent(EVENT_VAMPIRIC_BITE, 15000);
                 events.ScheduleEvent(EVENT_BLOOD_MIRROR, 2500, EVENT_GROUP_CANCELLABLE);
@@ -151,8 +151,6 @@ class boss_blood_queen_lana_thel : public CreatureScript
                 me->SetSpeed(MOVE_FLIGHT, 0.642857f, true);
                 offtank = NULL;
                 vampires.clear();
-
-                instance->SetBossState(DATA_BLOOD_QUEEN_LANA_THEL, NOT_STARTED);
             }
 
             void EnterCombat(Unit* who)
@@ -164,6 +162,7 @@ class boss_blood_queen_lana_thel : public CreatureScript
                     return;
                 }
 
+                me->setActive(true);
                 DoZoneInCombat();
                 Talk(SAY_AGGRO);
                 instance->SetBossState(DATA_BLOOD_QUEEN_LANA_THEL, IN_PROGRESS);
@@ -174,6 +173,7 @@ class boss_blood_queen_lana_thel : public CreatureScript
 
             void JustDied(Unit* /*killer*/)
             {
+                _JustDied();
                 Talk(SAY_DEATH);
                 instance->DoRemoveAurasDueToSpellOnPlayers(ESSENCE_OF_BLOOD_QUEEN);
                 instance->DoRemoveAurasDueToSpellOnPlayers(ESSENCE_OF_BLOOD_QUEEN_PLR);
@@ -184,11 +184,11 @@ class boss_blood_queen_lana_thel : public CreatureScript
                 instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_BLOOD_MIRROR_DUMMY);
                 instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_DELIRIOUS_SLASH);
                 instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_PACT_OF_THE_DARKFALLEN);
-                instance->SetBossState(DATA_BLOOD_QUEEN_LANA_THEL, DONE);
             }
 
             void JustReachedHome()
             {
+                _JustReachedHome();
                 Talk(SAY_WIPE);
                 instance->SetBossState(DATA_BLOOD_QUEEN_LANA_THEL, FAIL);
             }
@@ -229,7 +229,8 @@ class boss_blood_queen_lana_thel : public CreatureScript
                         me->RemoveByteFlag(UNIT_FIELD_BYTES_1, 3, 0x01);
                         me->SetFlying(false);
                         me->SetReactState(REACT_AGGRESSIVE);
-                        AttackStart(me->getVictim());
+                        if (Unit *victim = me->SelectVictim())
+                            AttackStart(victim);
                         events.ScheduleEvent(EVENT_BLOOD_MIRROR, 2500, EVENT_GROUP_CANCELLABLE);
                         break;
                     default:
@@ -266,19 +267,23 @@ class boss_blood_queen_lana_thel : public CreatureScript
                             break;
                         case EVENT_BLOOD_MIRROR:
                         {
-                            Player* newOfftank = SelectRandomTarget(true);
-                            if (offtank != newOfftank)
+                            // victim can be NULL when this is processed in the same update tick as EVENT_AIR_PHASE
+                            if (me->getVictim())
                             {
-                                offtank = newOfftank;
-                                if (offtank)
+                                Player* newOfftank = SelectRandomTarget(true);
+                                if (offtank != newOfftank)
                                 {
-                                    offtank->CastSpell(me->getVictim(), SPELL_BLOOD_MIRROR_DAMAGE, true);
-                                    me->getVictim()->CastSpell(offtank, SPELL_BLOOD_MIRROR_DUMMY, true);
-                                    DoCastVictim(SPELL_BLOOD_MIRROR_VISUAL);
-                                    if (Item* shadowsEdge = offtank->GetWeaponForAttack(BASE_ATTACK, true))
-                                        if (!offtank->HasAura(SPELL_THIRST_QUENCHED) && shadowsEdge->GetEntry() == ITEM_SHADOW_S_EDGE && !offtank->HasAura(SPELL_GUSHING_WOUND))
-                                            offtank->CastSpell(offtank, SPELL_GUSHING_WOUND, true);
+                                    offtank = newOfftank;
+                                    if (offtank)
+                                    {
+                                        offtank->CastSpell(me->getVictim(), SPELL_BLOOD_MIRROR_DAMAGE, true);
+                                        me->getVictim()->CastSpell(offtank, SPELL_BLOOD_MIRROR_DUMMY, true);
+                                        DoCastVictim(SPELL_BLOOD_MIRROR_VISUAL);
+                                        if (Item* shadowsEdge = offtank->GetWeaponForAttack(BASE_ATTACK, true))
+                                            if (!offtank->HasAura(SPELL_THIRST_QUENCHED) && shadowsEdge->GetEntry() == ITEM_SHADOW_S_EDGE && !offtank->HasAura(SPELL_GUSHING_WOUND))
+                                                offtank->CastSpell(offtank, SPELL_GUSHING_WOUND, true);
 
+                                    }
                                 }
                             }
                             events.ScheduleEvent(EVENT_BLOOD_MIRROR, 2500, EVENT_GROUP_CANCELLABLE);
@@ -555,6 +560,63 @@ class spell_blood_queen_bloodbolt : public SpellScriptLoader
         }
 };
 
+class PactOfTheDarkfallenChack
+{
+    public:
+        bool operator() (Unit* unit)
+        {
+            return !unit->HasAura(SPELL_PACT_OF_THE_DARKFALLEN);
+        }
+};
+
+class spell_blood_queen_pact_of_the_darkfallen : public SpellScriptLoader
+{
+    public:
+        spell_blood_queen_pact_of_the_darkfallen() : SpellScriptLoader("spell_blood_queen_pact_of_the_darkfallen") { }
+
+        class spell_blood_queen_pact_of_the_darkfallen_SpellScript : public SpellScript
+        {
+            PrepareSpellScript(spell_blood_queen_pact_of_the_darkfallen_SpellScript);
+
+            void FilterTargets(std::list<Unit*>& unitList)
+            {
+                unitList.remove_if(PactOfTheDarkfallenChack());
+
+                bool remove = true;
+                std::list<Unit*>::const_iterator itrEnd = unitList.end(), itr, itr2;
+                // we can do this, unitList is MAX 4 in size
+                for (itr = unitList.begin(); itr != itrEnd && remove; ++itr)
+                {
+                    if (!GetCaster()->IsWithinDist(*itr, 5.0f, false))
+                        remove = false;
+
+                    for (itr2 = unitList.begin(); itr2 != itrEnd && remove; ++itr2)
+                        if (itr != itr2 && !(*itr2)->IsWithinDist(*itr, 5.0f, false))
+                            remove = false;
+                }
+
+                if (remove)
+                {
+                    if (InstanceScript* instance = GetCaster()->GetInstanceScript())
+                    {
+                        instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_PACT_OF_THE_DARKFALLEN);
+                        unitList.clear();
+                    }
+                }
+            }
+
+            void Register()
+            {
+                OnUnitTargetSelect += SpellUnitTargetFn(spell_blood_queen_pact_of_the_darkfallen_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_AREA_ALLY_SRC);
+            }
+        };
+
+        SpellScript* GetSpellScript() const
+        {
+            return new spell_blood_queen_pact_of_the_darkfallen_SpellScript();
+        }
+};
+
 class achievement_once_bitten_twice_shy_n : public AchievementCriteriaScript
 {
     public:
@@ -593,6 +655,7 @@ void AddSC_boss_blood_queen_lana_thel()
     new spell_blood_queen_vampiric_bite();
     new spell_blood_queen_frenzied_bloodthirst();
     new spell_blood_queen_bloodbolt();
+    new spell_blood_queen_pact_of_the_darkfallen();
     new achievement_once_bitten_twice_shy_n();
     new achievement_once_bitten_twice_shy_v();
 }
