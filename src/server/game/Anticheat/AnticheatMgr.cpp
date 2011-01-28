@@ -41,7 +41,7 @@ void AnticheatMgr::DeletePlayerReport(Player* player)
     }
     while (result->NextRow());
 
-    ExtraDatabase.PExecute("DELETE FROM players_reports_status WHERE guid IN (%s)",guids.c_str());
+    ExtraDatabase.PExecute("DELETE FROM anticheat_reports WHERE guid IN (%s)",guids.c_str());
 }
 
 void AnticheatMgr::BuildReport(Player* player,uint8 reportType)
@@ -49,7 +49,7 @@ void AnticheatMgr::BuildReport(Player* player,uint8 reportType)
     if (player->anticheatData.total_reports == 0)
     {
         player->anticheatData.creation_time = time(NULL);
-        ExtraDatabase.PExecute("INSERT IGNORE INTO players_reports_status (guid,creation_time) VALUES (%u,%u);",player->GetGUIDLow(),player->anticheatData.creation_time);
+        ExtraDatabase.PExecute("INSERT IGNORE INTO anticheat_reports (guid,name,creation_time) VALUES (%u,'%s',%u);",player->GetGUIDLow(),player->GetName(),player->anticheatData.creation_time);
     }
 
     std::string report_type = report_types[reportType];
@@ -61,7 +61,7 @@ void AnticheatMgr::BuildReport(Player* player,uint8 reportType)
     player->anticheatData.average = player->anticheatData.total_reports > 0 ? ((player->anticheatData.average * (player->anticheatData.total_reports)) + actual_time) / (player->anticheatData.total_reports + 1) : 0;
     player->anticheatData.total_reports++;
 
-    ExtraDatabase.PExecute("UPDATE players_reports_status SET %s=%u, total_reports=%u, average=%u WHERE guid=%u",report_type.c_str(),player->anticheatData.type_reports[reportType],player->anticheatData.total_reports,player->anticheatData.average,player->GetGUIDLow());
+    ExtraDatabase.PExecute("UPDATE anticheat_reports SET %s=%u, total_reports=%u, average=%u WHERE guid=%u",report_type.c_str(),player->anticheatData.type_reports[reportType],player->anticheatData.total_reports,player->anticheatData.average,player->GetGUIDLow());
     
     if (player->anticheatData.total_reports > sWorld->getIntConfig(CONFIG_ANTICHEAT_REPORTS_INGAME_NOTIFICATION))
     {
@@ -96,7 +96,7 @@ void AnticheatMgr::JumpHackDetection(Player* player, MovementInfo movementInfo,u
     if (player->anticheatData.lastOpcode == MSG_MOVE_JUMP && opcode == MSG_MOVE_JUMP)
     {
         BuildReport(player,JUMP_HACK_REPORT);
-        //sLog->outError("Jump Hack Detection Player LowGuid %u",player->GetGUIDLow());
+        sLog->outError("Jump Hack Detection Player LowGuid %u",player->GetGUIDLow());
     }
 }
 
@@ -114,7 +114,7 @@ void AnticheatMgr::WalkOnWaterHackDetection(Player* player, MovementInfo movemen
         player->HasAuraType(SPELL_AURA_WATER_WALK))
         return;
 
-    //sLog->outError("Walk on Water Player LowGuid %u",player->GetGUIDLow());
+    sLog->outError("Walk on Water Player LowGuid %u",player->GetGUIDLow());
     BuildReport(player,WALK_WATER_HACK_REPORT);
 
 }
@@ -129,7 +129,7 @@ void AnticheatMgr::FlyHackDetection(Player* player, MovementInfo movementInfo)
         player->HasAuraType(SPELL_AURA_MOD_INCREASE_FLIGHT_SPEED))
         return;
     
-    //sLog->outError("FlyHack Player LowGuid %u",player->GetGUIDLow());
+    sLog->outError("FlyHack Player LowGuid %u",player->GetGUIDLow());
     BuildReport(player,FLY_HACK_REPORT);
 }
 
@@ -214,6 +214,6 @@ void AnticheatMgr::SpeedHackDetection(Player* player,MovementInfo movementInfo)
     if (clientSpeedRate > speedRate)
     {
         BuildReport(player,SPEED_HACK_REPORT);
-        //sLog->outError("Speed Hack Player LowGuid %u",player->GetGUIDLow());
+        sLog->outError("Speed Hack Player LowGuid %u",player->GetGUIDLow());
     }
 }
