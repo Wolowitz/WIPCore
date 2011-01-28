@@ -41,7 +41,7 @@ void AnticheatMgr::DeletePlayerReport(Player* player)
     }
     while (result->NextRow());
 
-    ExtraDatabase.PExecute("DELETE FROM players_reports_status WHERE guid IN (%s)",guids);
+    ExtraDatabase.PExecute("DELETE FROM players_reports_status WHERE guid IN (%s)",guids.c_str());
 }
 
 void AnticheatMgr::BuildReport(Player* player,uint8 reportType)
