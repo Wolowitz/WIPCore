@@ -28,7 +28,20 @@ void AnticheatMgr::DeletePlayerReport(Player* player)
     if (!player->GetSession())
         return;
 
-    ExtraDatabase.PExecute("DELETE FROM players_reports_status WHERE guid IN (SELECT guid FROM characters WHERE account=%u)",player->GetSession()->GetAccountId());
+    QueryResult result = CharacterDatabase.PQuery("SELECT guid FROM characters WHERE account=%u",player->GetSession()->GetAccountId());
+    if (!result)
+        return;
+
+    std::string guids;
+    do {
+        if (guids.length() > 0)
+            guids.append(", ");
+        Field *fields = result->Fetch();
+        guids.append(fields[0].GetString());
+    }
+    while (result->NextRow());
+
+    ExtraDatabase.PExecute("DELETE FROM players_reports_status WHERE guid IN (%s)",guids);
 }
 
 void AnticheatMgr::BuildReport(Player* player,uint8 reportType)
