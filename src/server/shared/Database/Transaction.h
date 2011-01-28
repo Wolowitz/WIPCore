@@ -27,6 +27,8 @@ class PreparedStatement;
 class Transaction
 {
     friend class TransactionTask;
+    friend class MySQLConnection;
+
     public:
         Transaction() {}
         ~Transaction() { Cleanup(); }

@@ -434,7 +434,7 @@ void Aura::_UnapplyForTarget(Unit * target, Unit * caster, AuraApplication * aur
     ASSERT(auraApp);
 
     ApplicationMap::iterator itr = m_applications.find(target->GetGUID());
-    
+
     // TODO: Figure out why this happens
     if (itr == m_applications.end())
     {
@@ -1058,6 +1058,13 @@ void Aura::HandleAuraSpecificMods(AuraApplication const * aurApp, Unit * caster,
                         int32 basepoints0 = GetEffect(0)->GetAmount();
                         caster->CastCustomSpell(target, 64801, &basepoints0, NULL, NULL, true, NULL, GetEffect(0));
                     }
+                }
+                // Faerie Fire (Feral)
+                else if (GetSpellProto()->Id == 16857)
+                {
+                    // Causes damage and threat in bear form or dire bear form only
+                    if (caster->GetShapeshiftForm() != FORM_CAT)
+                        caster->CastSpell(target, 60089, true);
                 }
                 break;
             case SPELLFAMILY_ROGUE:

@@ -2002,8 +2002,9 @@ public:
 
 enum eTrainingDummy
 {
-    NPC_ADVANCED_TARGET_DUMMY                  = 2674,
-    NPC_TARGET_DUMMY                           = 2673
+    NPC_ADVANCED_TARGET_DUMMY                   = 2674,
+    NPC_TARGET_DUMMY                            = 2673,
+    NPC_EYE_FOR_AN_EYE_DUMMY                    = 300001 // custom test dummy
 };
 
 class npc_training_dummy : public CreatureScript
@@ -2039,10 +2040,16 @@ public:
             Reset();
         }
 
-        void DamageTaken(Unit * /*done_by*/, uint32 &damage)
+        void DamageTaken(Unit *done_by, uint32 &damage)
         {
             uiResetTimer = 5000;
             damage = 0;
+            // custom test dummy
+            if (uiEntry == NPC_EYE_FOR_AN_EYE_DUMMY && done_by)
+            {
+                int32 damage = 1000;
+                me->CastCustomSpell(done_by, 26181, &damage, NULL, NULL, true);
+            }
         }
 
         void EnterCombat(Unit * /*who*/)
