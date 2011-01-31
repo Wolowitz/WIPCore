@@ -62,6 +62,13 @@ void AnticheatMgr::BuildReport(Player* player,uint8 reportType)
     player->anticheatData.total_reports++;
 
     ExtraDatabase.PExecute("UPDATE anticheat_reports SET %s=%u, total_reports=%u, average=%u WHERE guid=%u",report_type.c_str(),player->anticheatData.type_reports[reportType],player->anticheatData.total_reports,player->anticheatData.average,player->GetGUIDLow());
+
+    // Cheaters Logging
+    if (player->anticheatData.reported == false && player->anticheatData.average < 600 && player->anticheatData.total_reports > 200)
+    {
+        player->anticheatData.reported = true;
+        ExtraDatabase.PExecute("INSERT IGNORE INTO anticheat_log (guid, name) VALUES (%u, '%s');", player->GetGUIDLow(), player->GetName());
+    }
     
     if (player->anticheatData.total_reports > sWorld->getIntConfig(CONFIG_ANTICHEAT_REPORTS_INGAME_NOTIFICATION))
     {

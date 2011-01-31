@@ -408,6 +408,7 @@ Player::Player (WorldSession *session): Unit(), m_achievementMgr(this), m_reputa
 
     anticheatData.average = 0;
     anticheatData.creation_time = 0;
+    anticheatData.reported = false;
 
     m_speakTime = 0;
     m_speakCount = 0;

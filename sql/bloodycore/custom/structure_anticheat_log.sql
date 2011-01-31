@@ -1,0 +1,9 @@
+-- Anticheat Reports
+DROP TABLE IF EXISTS `anticheat_log`;
+CREATE TABLE `anticheat_log` (
+`id` INT( 9 ) NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+`guid` INT( 9 ) NOT NULL ,
+`name` VARCHAR( 12 ) NOT NULL ,
+`time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE = INNODB;
+
