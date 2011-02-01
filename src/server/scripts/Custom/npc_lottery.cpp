@@ -29,7 +29,7 @@ EndScriptData */
 ## npc_lotto
 ######*/
 
-#define GOSSIP_BUY_TICKET           "Compra un biglietto (50 ori)"
+#define GOSSIP_BUY_TICKET           "Compra un biglietto"
 #define TICKET_COST                 500000
 #define EVENT_BLOODYLOTTO           132
 
@@ -45,13 +45,13 @@ public:
             QueryResult result = ExtraDatabase.PQuery("SELECT id FROM lotto_tickets WHERE guid=%u", pPlayer->GetGUIDLow());
             if (result)
             {
-                // Hai già comprato il ticket!
+                pPlayer->SEND_GOSSIP_MENU(100001, pCreature->GetGUID());
                 return false;
             }
 
             pPlayer->PrepareGossipMenu(pCreature);
             pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_BUY_TICKET, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
-            pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
+            pPlayer->SEND_GOSSIP_MENU(100000, pCreature->GetGUID());
         }
         return true;
     }
@@ -70,6 +70,7 @@ public:
                 QueryResult result = ExtraDatabase.Query("SELECT MAX(id) FROM lotto_tickets");
                 uint32 id = result->Fetch()->GetUInt32();
                 ExtraDatabase.PExecute("INSERT INTO lotto_tickets (id,name,guid) VALUES (%u,'%s',%u);", id+1, pPlayer->GetName(), pPlayer->GetGUIDLow());
+                pCreature->MonsterWhisper("Buona fortuna, $N. Ci vediamo all'estrazione!", pPlayer->GetGUID());
                 break;
         }
         pPlayer->PlayerTalkClass->CloseGossip();
