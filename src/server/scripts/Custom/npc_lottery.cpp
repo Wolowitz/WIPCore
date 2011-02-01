@@ -70,7 +70,7 @@ public:
                 QueryResult result = ExtraDatabase.Query("SELECT MAX(id) FROM lotto_tickets");
                 uint32 id = result->Fetch()->GetUInt32();
                 ExtraDatabase.PExecute("INSERT INTO lotto_tickets (id,name,guid) VALUES (%u,'%s',%u);", id+1, pPlayer->GetName(), pPlayer->GetGUIDLow());
-                pCreature->MonsterWhisper("Buona fortuna, $N. Ci vediamo all'estrazione!", pPlayer->GetGUID());
+                pCreature->MonsterWhisper("Buona fortuna, $N.", pPlayer->GetGUID());
                 break;
         }
         pPlayer->PlayerTalkClass->CloseGossip();
@@ -84,7 +84,12 @@ public:
 
     struct npc_lottoAI : public ScriptedAI
     {
-        npc_lottoAI(Creature* pCreature) : ScriptedAI(pCreature) { }
+        npc_lottoAI(Creature* pCreature) : ScriptedAI(pCreature) 
+        {
+            SayTimer = 1800*IN_MILLISECONDS;
+        }
+        
+        uint32 SayTimer;
 
         void UpdateAI(const uint32 diff)
         {
@@ -98,7 +103,7 @@ public:
                     if (maxTickets)
                     {
                         uint32 winner = urand(1, maxTickets);
-                        uint32 reward = TICKET_COST * maxTickets * 0.3f;
+                        uint32 reward = TICKET_COST / 2.0f * maxTickets;
                         result = ExtraDatabase.PQuery("SELECT guid FROM lotto_tickets WHERE id=%u;", winner);
                         uint32 winnerGuid = result->Fetch()->GetUInt32();
                         Player *pWinner = sObjectMgr->GetPlayerByLowGUID(winnerGuid);
@@ -117,6 +122,13 @@ public:
             {
                 if (!me->IsVisible())
                     me->SetVisible(true);
+                    
+                if (SayTimer <= diff)
+                {
+                    me->MonsterSay("Biglietti della Lotteria BloodyWars! Bastano 50 ori per diventare milionari!", 0, NULL);
+                    SayTimer = 1800*IN_MILLISECONDS;
+                }
+                else SayTimer -= diff;
             }
         }
     };
