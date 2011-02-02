@@ -70,7 +70,9 @@ public:
                 QueryResult result = ExtraDatabase.Query("SELECT MAX(id) FROM lotto_tickets");
                 uint32 id = result->Fetch()->GetUInt32();
                 ExtraDatabase.PExecute("INSERT INTO lotto_tickets (id,name,guid) VALUES (%u,'%s',%u);", id+1, pPlayer->GetName(), pPlayer->GetGUIDLow());
-                pCreature->MonsterWhisper("Buona fortuna, $N.", pPlayer->GetGUID());
+                char msg[500];
+                sprintf(msg, "Buona fortuna, $N. Il tuo biglietto e' il numero %i", id+1);
+                pCreature->MonsterWhisper(msg, pPlayer->GetGUID());
                 break;
         }
         pPlayer->PlayerTalkClass->CloseGossip();
@@ -112,7 +114,19 @@ public:
                             .AddMoney(reward)
                             .SendMailTo(trans, MailReceiver(pWinner, GUID_LOPART(winnerGuid)), MailSender(MAIL_NORMAL, 0, MAIL_STATIONERY_GM));
                         CharacterDatabase.CommitTransaction(trans);
-                        sWorld->SendWorldText(LANG_EVENTMESSAGE, "Il BloodyLotto alle Otto! Prossima estrazione domani alla stessa ora!");
+                        
+                        if (pWinner) 
+                        {
+                            char msg[500];
+                            sprintf(msg, "E' stato estratto il biglietto numero %i , e il vincitore e' %s ! Premio: %i ori! Prossima estrazione domani alla stessa ora!", winner, pWinner->GetName(), reward/10000);
+                            sWorld->SendWorldText(LANG_EVENTMESSAGE, msg);
+                        } else 
+                        {
+                            char msg[500];
+                            sprintf(msg, "E' stato estratto il biglietto numero %i per un ammontare di %i ori! Prossima estrazione domani!", winner, reward/10000);
+                            sWorld->SendWorldText(LANG_EVENTMESSAGE, msg);
+                        }
+
                         ExtraDatabase.PExecute("INSERT INTO lotto_extractions (winner,guid) SELECT name,guid FROM lotto_tickets WHERE id=%u;", winner);
                         ExtraDatabase.PExecute("DELETE FROM lotto_tickets;");
                     }
