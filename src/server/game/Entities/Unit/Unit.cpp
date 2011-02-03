@@ -2160,12 +2160,12 @@ uint32 Unit::CalculateDamage(WeaponAttackType attType, bool normalized, bool add
                 max_damage = 0.0f;
                 break;
         }
+    }
 
-        if (GetTypeId() == TYPEID_PLAYER)
-        {
-            min_damage /= GetFloatValue(PLAYER_FIELD_MOD_DAMAGE_DONE_PCT);
-            max_damage /= GetFloatValue(PLAYER_FIELD_MOD_DAMAGE_DONE_PCT);
-        }
+    if (GetTypeId() == TYPEID_PLAYER)
+    {
+        min_damage /= GetFloatValue(PLAYER_FIELD_MOD_DAMAGE_DONE_PCT);
+        max_damage /= GetFloatValue(PLAYER_FIELD_MOD_DAMAGE_DONE_PCT);
     }
 
     if (min_damage > max_damage)
