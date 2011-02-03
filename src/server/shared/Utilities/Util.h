@@ -121,19 +121,19 @@ inline T CalculatePctU(T base, uint32 pct)
 template <class T>
 inline T AddPctF(T& base, float pct)
 {
-    return base += CalculatePctF(base, pct);
+    return base += pct / 100.0f;
 }
 
 template <class T>
 inline T AddPctN(T& base, int32 pct)
 {
-    return base += CalculatePctN(base, pct);
+    return base += float(pct) / 100.0f;
 }
 
 template <class T>
 inline T AddPctU(T& base, uint32 pct)
 {
-    return base += CalculatePctU(base, pct);
+    return base += float(pct) / 100.0f;
 }
 
 template <class T>
