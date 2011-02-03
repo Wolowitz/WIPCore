@@ -1,0 +1,3 @@
+ALTER TABLE `lotto_extractions`
+ADD `position` INT(10) UNSIGNED DEFAULT '0' NOT NULL,
+ADD `reward` INT(10) UNSIGNED DEFAULT '0' NOT NULL;
