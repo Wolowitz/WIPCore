@@ -11680,6 +11680,7 @@ Item* Player::StoreNewItem(ItemPosCountVec const& dest, uint32 item, bool update
             stmt->setUInt32(0, GetGUIDLow());
             stmt->setUInt32(1, pItem->GetEntry());
             stmt->setUInt32(2, 0);
+            stmt->setUInt32(3, GetMap()->GetId());
             ExtraDatabase.Execute(stmt);
         }
 
@@ -12183,6 +12184,7 @@ void Player::DestroyItem(uint8 bag, uint8 slot, bool update)
             stmt->setUInt32(0, GetGUIDLow());
             stmt->setUInt32(1, pItem->GetEntry());
             stmt->setUInt32(2, 1);
+            stmt->setUInt32(3, GetMap()->GetId());
             ExtraDatabase.Execute(stmt);
         }
 
@@ -19163,7 +19165,7 @@ void Player::Whisper(const std::string& text, uint32 language, uint64 receiver)
         // announce to player that player he is whispering to is dnd and cannot receive his message
         ChatHandler(this).PSendSysMessage(LANG_PLAYER_DND, rPlayer->GetName(), rPlayer->dndMsg.c_str());
 
-    if (!isAcceptWhispers() && !isGameMaster() && !rPlayer->isGameMaster())
+    if ((!isAcceptWhispers() && isGameMaster()) || (!isAcceptWhispers() && !isGameMaster()) && !rPlayer->isGameMaster())
     {
         SetAcceptWhispers(true);
         ChatHandler(this).SendSysMessage(LANG_COMMAND_WHISPERON);
