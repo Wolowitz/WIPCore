@@ -2557,6 +2557,7 @@ void Spell::SelectEffectTargets(uint32 i, uint32 cur)
                                         case TYPEID_UNIT:
                                         case TYPEID_PLAYER:
                                             m_targets.setUnitTarget((Unit*)result);
+                                            AddUnitTarget(m_targets.getUnitTarget(), 0);
                                             break;
                                         default:
                                             break;
