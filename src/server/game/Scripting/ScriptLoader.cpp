@@ -1213,6 +1213,7 @@ void AddBattlegroundScripts()
 /* This is where custom scripts' loading functions should be declared. */
 void AddSC_npc_guildhouses();
 void AddSC_npc_lottery();
+void AddSC_npcs_mini_boss();
 #endif
 
 void AddCustomScripts()
@@ -1221,5 +1222,6 @@ void AddCustomScripts()
     /* This is where custom scripts should be added. */
     AddSC_npc_guildhouses();
     AddSC_npc_lottery();
+    AddSC_npcs_mini_boss();
 #endif
 }
