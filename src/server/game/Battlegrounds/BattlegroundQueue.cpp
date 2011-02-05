@@ -972,7 +972,8 @@ void BattlegroundQueue::Update(BattlegroundTypeId bgTypeId, BattlegroundBracketI
         }
 
         //if we have 2 teams, then start new arena and invite players!
-        if (m_SelectionPools[BG_TEAM_ALLIANCE].GetPlayerCount() && m_SelectionPools[BG_TEAM_HORDE].GetPlayerCount())
+        if ((m_SelectionPools[BG_TEAM_ALLIANCE].GetPlayerCount() && m_SelectionPools[BG_TEAM_HORDE].GetPlayerCount()) &&
+            ((*(itr_team[BG_TEAM_ALLIANCE]))->ArenaTeamId != (*(itr_team[BG_TEAM_HORDE]))->ArenaTeamId)) // prevent that 2 parties of the same team join against each other
         {
             Battleground* arena = sBattlegroundMgr->CreateNewBattleground(bgTypeId, bracketEntry, arenaType, true);
             if (!arena)
