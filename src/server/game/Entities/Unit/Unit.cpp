@@ -6521,6 +6521,7 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, AuraEffect* trigger
                         {
                             basepoints0 = damage;
                             triggered_spell_id = 53654;
+                            originalCaster = pVictim->GetGUID();
                             target = beaconTarget;
                             break;
                         }
