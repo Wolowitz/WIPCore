@@ -4115,8 +4115,10 @@ void SpellMgr::LoadSpellCustomAttr()
             spellInfo->EffectMiscValue[1] = 127;
             count++;
             break;
-        case 23126: //World Enlarger
+        case 23126: // World Enlarger
             spellInfo->AuraInterruptFlags |= AURA_INTERRUPT_FLAG_SPELL_ATTACK;
+            count++;
+            break;
         default:
             break;
         }
