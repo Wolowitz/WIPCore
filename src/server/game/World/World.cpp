@@ -1184,7 +1184,11 @@ void World::LoadConfigSettings(bool reload)
 
     m_bool_configs[CONFIG_ANTICHEAT_ENABLE] = sConfig->GetBoolDefault("Anticheat.Enable", true);
     m_int_configs[CONFIG_ANTICHEAT_REPORTS_INGAME_NOTIFICATION] = sConfig->GetIntDefault("Anticheat.ReportsForIngameWarnings", 70);
-    
+
+    // Custom config settings
+    m_bool_configs[CONFIG_RESET_COOLDOWNS_AFTER_DUEL] = sConfig->GetBoolDefault("ResetCooldownsAfterDuel", false);
+    m_bool_configs[CONFIG_RESTORE_HEALTH_AFTER_DUEL] = sConfig->GetBoolDefault("RestoreHealthAfterDuel", false);
+
     sScriptMgr->OnConfigLoad(reload);
 }
 

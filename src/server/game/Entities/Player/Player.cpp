@@ -7373,6 +7373,20 @@ void Player::DuelComplete(DuelCompleteType type)
     if (uint32 amount = sWorld->getIntConfig(CONFIG_HONOR_AFTER_DUEL))
         duel->opponent->RewardHonor(NULL,1,amount);
 
+    // Reset cooldowns
+	if(sWorld->getBoolConfig(CONFIG_RESET_COOLDOWNS_AFTER_DUEL)){
+        duel->opponent->RemoveArenaSpellCooldowns();
+        RemoveArenaSpellCooldowns();
+		}
+
+	// Full Health after duel
+	if(sWorld->getBoolConfig(CONFIG_RESTORE_HEALTH_AFTER_DUEL)){
+		duel->opponent->SetHealth(duel->opponent->GetMaxHealth());
+		duel->opponent->SetPower(POWER_MANA,duel->opponent->GetMaxPower(POWER_MANA));
+		SetHealth(GetMaxHealth());
+		SetPower(POWER_MANA,GetMaxPower(POWER_MANA));
+		}
+
     //cleanups
     SetUInt64Value(PLAYER_DUEL_ARBITER, 0);
     SetUInt32Value(PLAYER_DUEL_TEAM, 0);
