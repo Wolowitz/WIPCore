@@ -1867,6 +1867,7 @@ void World::Update(uint32 diff)
     if (m_gameTime > m_NextDailyQuestReset)
     {
         ResetDailyQuests();
+		ShutdownServ(300,0,SHUTDOWN_EXIT_CODE);
         m_NextDailyQuestReset += DAY;
     }
 
@@ -2616,7 +2617,7 @@ void World::InitDailyQuestResetTime()
     // FIX ME: client not show day start time
     time_t curTime = time(NULL);
     tm localTm = *localtime(&curTime);
-    localTm.tm_hour = 6;
+    localTm.tm_hour = 4;
     localTm.tm_min  = 0;
     localTm.tm_sec  = 0;
 
