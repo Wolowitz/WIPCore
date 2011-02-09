@@ -133,13 +133,14 @@ public:
                         switch (position)
                         {
                             case 1:
-                                sprintf(msg, "Il vincitore della Lotteria e' %s che guadagna la bellezza di %i gold!",name,reward/10000);
+                                sWorld->SendWorldText(LANG_EVENTMESSAGE, "| Estrazione BloodyLotto |");
+                                sprintf(msg, "| 1 - %s vince %i gold!",name,reward/10000);
                                 break;
                             case 2:
-                                sprintf(msg, "Il secondo premio va a %s che vince %i gold!",name,reward/10000);
+                                sprintf(msg, "| 2 - %s vince %i gold!",name,reward/10000);
                                 break;
                             case 3:
-                                sprintf(msg, "Mentre il terzo se lo aggiudica %s che vince %i gold!",name,reward/10000);
+                                sprintf(msg, "| 3 - %s vince %i gold!",name,reward/10000);
                                 break;
                         }
                         sWorld->SendWorldText(LANG_EVENTMESSAGE, msg);
