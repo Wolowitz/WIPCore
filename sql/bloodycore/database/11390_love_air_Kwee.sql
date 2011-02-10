@@ -1,5 +1,5 @@
 -- Spawn Kwee Q. Peddlefeet <Crown Chemical Co.>
-DELETE FROM `game_event_creature` WHERE `guid`IN (140011, 140012, 140013, 140014, 140015, 140016, 140017, 140018);
+DELETE FROM `creature` WHERE `id`IN (38041, 38042, 38043, 38044, 38045, 37887, 38039, 38040);
 INSERT INTO `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`) VALUES 
 (140011, 38041, 0, 1, 1, 0, 0, -4929.8, -986.381, 501.46, 2.15142, 300, 0, 0, 42, 0, 0, 0, 0, 0, 0), -- Ironforge
 (140012, 38042, 1, 1, 1, 0, 0, 1612.65, -4401.94, 10.9967, 2.98762, 300, 0, 0, 42, 0, 0, 0, 0, 0, 0), -- Orgrimmar
