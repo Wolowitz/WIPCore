@@ -2580,7 +2580,9 @@ SpellMissInfo Unit::SpellHitResult(Unit *pVictim, SpellEntry const *spell, bool 
 
     if (this == pVictim)
         return SPELL_MISS_NONE;
-
+    // Magic melee spells cannot be reflected
+    if (spell->DmgClass == SPELL_DAMAGE_CLASS_MAGIC && (spell->AttributesEx & SPELL_ATTR1_UNK9))
+        CanReflect = false;
     // Try victim reflect spell
     if (CanReflect)
     {
@@ -9855,7 +9857,8 @@ Unit* Unit::SelectMagnetTarget(Unit *victim, SpellEntry const *spellInfo)
         return NULL;
 
     // Magic case
-    if (spellInfo && (spellInfo->DmgClass == SPELL_DAMAGE_CLASS_NONE || spellInfo->DmgClass == SPELL_DAMAGE_CLASS_MAGIC))
+    if (spellInfo && (spellInfo->DmgClass == SPELL_DAMAGE_CLASS_NONE || (spellInfo->DmgClass == SPELL_DAMAGE_CLASS_MAGIC &&
+        !(spellInfo->AttributesEx & SPELL_ATTR1_UNK9)))) // exception for magic melee spells
     {
         //I am not sure if this should be redirected.
         if (spellInfo->DmgClass == SPELL_DAMAGE_CLASS_NONE)
