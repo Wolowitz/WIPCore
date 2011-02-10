@@ -11,7 +11,7 @@ INSERT INTO `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`
 (140018, 38040, 530, 1, 1, 0, 0, -4009.93, -11848.3, 0.133631, 3.75451, 300, 0, 0, 42, 0, 0, 0, 0, 0, 0); -- Exodar
 
 -- Event for creature Kwee Q. Peddlefeet <Crown Chemical Co.>
-DELETE FROM `game_event_creature` WHERE `guid`IN (140003, 140004, 140005, 140006, 140007, 140008, 140009, 140010);
+DELETE FROM `game_event_creature` WHERE `guid`IN (140011, 140012, 140013, 140014, 140015, 140016, 140017, 140018);
 INSERT INTO `game_event_creature` (`guid`,`event`) VALUES
 (140011, 8),
 (140012, 8),
