@@ -4138,6 +4138,13 @@ void SpellMgr::LoadSpellCustomAttr()
             spellInfo->AuraInterruptFlags |= AURA_INTERRUPT_FLAG_SPELL_ATTACK;
             count++;
             break;
+        case 30451: // Arcane Blast
+        case 42894:
+        case 42896:
+        case 42897:
+            spellInfo->AttributesEx |= SPELL_ATTR1_NEGATIVE;
+            count++;
+            break;
         default:
             break;
         }
