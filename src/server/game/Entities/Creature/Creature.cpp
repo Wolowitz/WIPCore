@@ -265,7 +265,6 @@ bool Creature::InitEntry(uint32 Entry, uint32 /*team*/, const CreatureData *data
     }
 
     // get difficulty 1 mode entry
-    uint32 actualEntry = Entry;
     CreatureInfo const *cinfo = normalInfo;
     for (uint8 diff = uint8(GetMap()->GetSpawnMode()); diff > 0;)
     {
@@ -1422,6 +1421,17 @@ bool Creature::isVisibleForInState(WorldObject const* seer) const
     return false;
 }
 
+bool Creature::canSeeAlways(WorldObject const* obj) const
+{
+    if (Unit::canSeeAlways(obj))
+        return true;
+
+    if (IsAIEnabled && AI()->CanSeeAlways(obj))
+        return true;
+
+    return false;
+}
+
 bool Creature::canStartAttack(Unit const* who, bool force) const
 {
     if (isCivilian())
@@ -1961,9 +1971,17 @@ bool Creature::_IsTargetAcceptable(const Unit *target) const
     // if the target cannot be attacked, the target is not acceptable
     if (IsFriendlyTo(target)
         || !target->isAttackableByAOE()
-        || target->HasUnitState(UNIT_STAT_DIED)
         || (m_vehicle && (IsOnVehicle(target) || m_vehicle->GetBase()->IsOnVehicle(target))))
         return false;
+
+    if (target->HasUnitState(UNIT_STAT_DIED))
+    {
+        // guards can detect fake death
+        if (isGuard() && target->HasFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FEIGN_DEATH))
+            return true;
+        else
+            return false;
+    }
 
     const Unit *myVictim = getAttackerForHelper();
     const Unit *targetVictim = target->getAttackerForHelper();
@@ -2408,4 +2426,10 @@ void Creature::FarTeleportTo(Map* map, float X, float Y, float Z, float O)
     AddToWorld();
 
     SetPosition(X, Y, Z, O, true);
+}
+
+bool Creature::IsDungeonBoss() const
+{
+    CreatureInfo const *cinfo = ObjectMgr::GetCreatureTemplate(GetEntry());
+    return cinfo && (cinfo->flags_extra & CREATURE_FLAG_EXTRA_DUNGEON_BOSS);
 }
