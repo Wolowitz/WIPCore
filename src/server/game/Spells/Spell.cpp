@@ -1291,6 +1291,8 @@ void Spell::DoAllEffectOnTarget(TargetInfo *target)
         caster->DealDamageMods(damageInfo.target,damageInfo.damage,&damageInfo.absorb);
 
         // Send log damage message to client
+        if (missInfo == SPELL_MISS_REFLECT)
+            damageInfo.attacker = unit;
         caster->SendSpellNonMeleeDamageLog(&damageInfo);
 
         procEx |= createProcExtendMask(&damageInfo, missInfo);
