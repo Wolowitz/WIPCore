@@ -522,11 +522,10 @@ m_caster(Caster), m_spellValue(new SpellValue(m_spellInfo))
             if (!IsPositiveTarget(m_spellInfo->EffectImplicitTargetA[j], m_spellInfo->EffectImplicitTargetB[j]))
                 m_canReflect = true;
             else
-                m_canReflect = (m_spellInfo->AttributesEx & SPELL_ATTR1_NEGATIVE) ? true : false;
+                if (m_spellInfo->AttributesEx & SPELL_ATTR1_NEGATIVE)
+                    m_canReflect = true;
 
             if (m_canReflect)
-                continue;
-            else
                 break;
         }
     }
