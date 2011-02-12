@@ -14244,6 +14244,8 @@ void Player::SendPreparedQuest(uint64 guid)
                     PlayerTalkClass->SendQuestGiverQuestDetails(pQuest, guid, true);
             }
         }
+        else
+            PlayerTalkClass->SendQuestGiverQuestList(qe, title, guid);
     }
 }
 
