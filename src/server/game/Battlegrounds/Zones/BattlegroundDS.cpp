@@ -90,7 +90,7 @@ void BattlegroundDS::StartingEventOpenDoors()
         DoorOpen(i);
 
     for (uint32 i = BG_DS_OBJECT_BUFF_1; i <= BG_DS_OBJECT_BUFF_2; ++i)
-        SpawnBGObject(i, 60);
+        SpawnBGObject(i, 90);
 
     setWaterFallTimer(urand(BG_DS_WATERFALL_TIMER_MIN, BG_DS_WATERFALL_TIMER_MAX));
     setWaterFallActive(false);
