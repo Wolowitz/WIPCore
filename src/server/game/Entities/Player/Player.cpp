@@ -14244,8 +14244,15 @@ void Player::SendPreparedQuest(uint64 guid)
                     PlayerTalkClass->SendQuestGiverQuestDetails(pQuest, guid, true);
             }
         }
-        else
-            PlayerTalkClass->SendQuestGiverQuestList(qe, title, guid);
+    }
+    // multiple entries
+    else
+    {
+        QEmote qe;
+        qe._Delay = 0;
+        qe._Emote = 0;
+        std::string title = "";
+        PlayerTalkClass->SendQuestGiverQuestList(qe, title, guid);
     }
 }
 
