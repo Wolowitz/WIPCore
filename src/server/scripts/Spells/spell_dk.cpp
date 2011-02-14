@@ -263,7 +263,7 @@ public:
         {
             Unit* caster = GetCaster();
             if (Unit* unitTarget = GetHitUnit())
-                m_multip = (GetEffectValue() * unitTarget->GetDiseasesByCaster(caster->GetGUID())) / 100.0f;
+                m_multip = CalculatePctU(GetEffectValue(), unitTarget->GetDiseasesByCaster(caster->GetGUID()));
         }
 
         void HandleAfterHit()
