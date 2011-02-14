@@ -1884,7 +1884,6 @@ public:
             }
         }
 
-
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
