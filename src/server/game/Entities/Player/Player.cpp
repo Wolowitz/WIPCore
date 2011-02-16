@@ -2238,12 +2238,7 @@ void Player::RegenerateAll()
 
     if (m_regenTimerCount >= 2000)
     {
-        // Not in combat or they have regeneration
-        if (!isInCombat() || HasAuraType(SPELL_AURA_MOD_REGEN_DURING_COMBAT) ||
-            HasAuraType(SPELL_AURA_MOD_HEALTH_REGEN_IN_COMBAT) || IsPolymorphed())
-        {
-            RegenerateHealth();
-        }
+        RegenerateHealth();
 
         Regenerate(POWER_RAGE);
         if (getClass() == CLASS_DEATH_KNIGHT)
@@ -2391,7 +2386,7 @@ void Player::RegenerateHealth()
     if (IsPolymorphed())
         addvalue = (float)GetMaxHealth()/3;
     // normal regen case (maybe partly in combat case)
-    else if (!isInCombat() || HasAuraType(SPELL_AURA_MOD_REGEN_DURING_COMBAT))
+    else if (!isInCombat() || HasAuraType(SPELL_AURA_MOD_REGEN_DURING_COMBAT) || HasAuraType(SPELL_AURA_MOD_HEALTH_REGEN_IN_COMBAT))
     {
         addvalue = OCTRegenHPPerSpirit()* HealthIncreaseRate;
         if (!isInCombat())
