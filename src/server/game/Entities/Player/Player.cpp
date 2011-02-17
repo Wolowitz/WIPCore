@@ -16396,10 +16396,10 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
 
         if (player_at_bg && currentBg->GetStatus() != STATUS_WAIT_LEAVE)
         {
-            BattlegroundQueueTypeId bgQueueTypeId = sBattlegroundMgr->BGQueueTypeId(currentBg->GetTypeID(true), currentBg->GetArenaType());
+            BattlegroundQueueTypeId bgQueueTypeId = sBattlegroundMgr->BGQueueTypeId(currentBg->GetTypeID(false), currentBg->GetArenaType());
             AddBattlegroundQueueId(bgQueueTypeId);
 
-            m_bgData.bgTypeID = currentBg->GetTypeID(true);
+            m_bgData.bgTypeID = currentBg->GetTypeID(false);
 
             //join player to battleground group
             currentBg->EventPlayerLoggedIn(this);
