@@ -2623,10 +2623,9 @@ void Spell::SelectEffectTargets(uint32 i, uint32 cur)
                         case 62834: // Boom (Boombot)
                         case 64320: // Rune of Power (Assembly of Iron)
                         case 28374: // Decimate (Gluth)
-                        case 54426: // Decimate
+                        case 54426:
                             SearchAreaTarget(unitList, radius, pushType, SPELL_TARGETS_ANY);
                             break;
-
                         default:
                             sLog->outDebug("Spell (ID: %u) (caster Entry: %u) does not have type CONDITION_SOURCE_TYPE_SPELL_SCRIPT_TARGET record in `conditions` table.", m_spellInfo->Id, m_caster->GetEntry());
 
