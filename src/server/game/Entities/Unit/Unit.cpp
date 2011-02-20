@@ -14254,12 +14254,12 @@ void Unit::ProcDamageAndSpellFor(bool isVictim, Unit * pTarget, uint32 procFlag,
             if (GetTypeId() == TYPEID_PLAYER)
             {
                 // Check Dummy Proc Cooldown
-                if (!this->ToPlayer()->HasSpellCooldown(0x80000000 | Id))
+                if (!this->ToPlayer()->HasSpellCooldown(0x800000 | Id))
                 {
                     i->aura->DropCharge();
                     // Add Dummy Proc Cooldown (if any) if spell procs form it's own aura
                     if (cooldown && spellInfo->Id == Id)
-                        this->ToPlayer()->AddSpellCooldown(0x80000000 | Id, 0, time(NULL) + cooldown);
+                        this->ToPlayer()->AddSpellCooldown(0x800000 | Id, 0, time(NULL) + cooldown);
                 }
             }
             else
