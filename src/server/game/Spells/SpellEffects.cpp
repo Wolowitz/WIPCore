@@ -652,8 +652,7 @@ void Spell::SpellDamageSchoolDmg(SpellEffIndex effIndex)
                             // count consumed deadly poison doses at target
                             uint32 spellId = aurEff->GetId();
                             uint32 doses = aurEff->GetBase()->GetStackAmount();
-                            if (doses > combo)
-                                doses = combo;
+
                             // Master Poisoner							
                             bool needConsume = true;
                             Unit::AuraEffectList const& auraList = m_caster->ToPlayer()->GetAuraEffectsByType(SPELL_AURA_MOD_AURA_DURATION_BY_DISPEL_NOT_STACK);
