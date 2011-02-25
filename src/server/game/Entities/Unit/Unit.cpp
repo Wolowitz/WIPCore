@@ -16715,10 +16715,11 @@ void Unit::ExitVehicle(Position const* exitPosition)
     else
         Relocate(vehicle->GetBase());           // Relocate to vehicle base
 
-    //Send leave vehicle, not correct
+    // Send leave vehicle, not correct
     if (GetTypeId() == TYPEID_PLAYER)
     {
         //this->ToPlayer()->SetClientControl(this, 1);
+        this->ToPlayer()->SendTeleportAckPacket();
         this->ToPlayer()->SetFallInformation(0, GetPositionZ());
     }
 
