@@ -128,7 +128,7 @@ ExtraDatabase.SynchThreads     = 1
 #        Description: Time (in minutes) between database pings.
 #        Default:     30
 
-MaxPingTime = 30
+MaxPingTime = 4
 
 #
 #    WorldServerPort
@@ -163,7 +163,7 @@ UseProcessors = 0
 #        Default:     1 - (High)
 #                     0 - (Normal)
 
-ProcessPriority = 1
+ProcessPriority = 0
 
 #
 #    Compression
@@ -183,7 +183,7 @@ Compression = 1
 #                     1+  - (Enabled)
 #                     0   - (Disabled, No limit)
 
-PlayerLimit = 100
+PlayerLimit = 1000
 
 #
 #    SaveRespawnTimeImmediately
@@ -191,7 +191,7 @@ PlayerLimit = 100
 #        Default:     1 - (Enabled, Save respawn time immediately)
 #                     0 - (Disabled, Save respawn time at grid unloading)
 
-SaveRespawnTimeImmediately = 1
+SaveRespawnTimeImmediately = 0
 
 #
 #    MaxOverspeedPings
@@ -210,6 +210,13 @@ MaxOverspeedPings = 2
 #                     0 - (disable, Do not unload grids)
 
 GridUnload = 1
+
+#
+#    SocketSelectTime
+#        Description: Time (in milliseconds) for socket selection.
+#        Default:     10000 - (10 seconds)
+
+SocketSelectTime = 10000
 
 #
 #    SocketTimeOutTime
@@ -232,7 +239,7 @@ SessionAddDelay = 10000
 #        Description: Time (in milliseconds) grid clean up delay.
 #        Default:     300000 - (5 minutes)
 
-GridCleanUpDelay = 300000
+GridCleanUpDelay = 1800000
 
 #
 #    MapUpdateInterval
@@ -253,7 +260,7 @@ ChangeWeatherInterval = 600000
 #        Description: Time (in milliseconds) for player save interval.
 #        Default:     900000 - (15 min)
 
-PlayerSaveInterval = 900000
+PlayerSaveInterval = 300000
 
 #
 #    PlayerSave.Stats.MinLevel
@@ -289,7 +296,7 @@ vmap.enableHeight = 1
 #        has to be enclosed by "
 #        Example: "369,0,1,530"
 
-vmap.ignoreMapIds = ""
+vmap.ignoreMapIds = "369,0,530"
 
 #
 #    vmap.ignoreSpellIds
@@ -314,7 +321,7 @@ vmap.petLOS = 1
 #        Default:     1 - (Enabled)
 #                     0 - (Disabled, somewhat less CPU usage)
 
-vmap.enableIndoorCheck = 1
+vmap.enableIndoorCheck = 0
 
 #
 #    DetectPosCollision
@@ -334,7 +341,7 @@ DetectPosCollision = 1
 #                     0.5 - (Minimum, Contact Range, More sensitive reaction to target movement)
 #                     5.0 - (Maximum, Melee attack range, Less CPU usage)
 
-TargetPosRecalculateRange = 1.5
+TargetPosRecalculateRange = 2.5
 
 #
 #    UpdateUptimeInterval
@@ -367,7 +374,7 @@ LogDB.Opt.ClearTime = 1209600
 #        Default:     0   - (Disabled)
 #                     10+ - (Enabled, Recommended 10+)
 
-MaxCoreStuckTime = 0
+MaxCoreStuckTime = 120
 
 #
 #    AddonChannel
@@ -442,7 +449,7 @@ LogFile = "Server.log"
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-LogTimestamp = 0
+LogTimestamp = 1
 
 #
 #    LogFileLevel
@@ -526,7 +533,7 @@ CharLogFile = "Char.log"
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-CharLogTimestamp = 0
+CharLogTimestamp = 1
 
 #
 #    CharLogDump
@@ -537,7 +544,7 @@ CharLogTimestamp = 0
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-CharLogDump = 0
+CharLogDump = 1
 
 #
 #    CharLogDump.Separate
@@ -546,7 +553,7 @@ CharLogDump = 0
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-CharLogDump.Separate = 0
+CharLogDump.Separate = 1
 
 #
 #    CharLogDump.SeparateDir
@@ -571,7 +578,7 @@ GmLogFile = "GM.log"
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-GmLogTimestamp = 0
+GmLogTimestamp = 1
 
 #
 #    GmLogPerAccount
@@ -596,7 +603,7 @@ RaLogFile = "RA.log"
 #        Example:     "Arena.log" - (Enabled)
 #        Default:     ""          - (Disabled)
 
-ArenaLogFile = ""
+ArenaLogFile = "Arena.log"
 
 #
 #    ArenaLog.ExtendedInfo
@@ -670,7 +677,7 @@ DBLogLevel = 2
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-LogDB.Char = 0
+LogDB.Char = 1
 
 #
 #    LogDB.GM
@@ -678,7 +685,7 @@ LogDB.Char = 0
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-LogDB.GM = 0
+LogDB.GM = 1
 
 #
 #    LogDB.RA
@@ -686,7 +693,7 @@ LogDB.GM = 0
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-LogDB.RA = 0
+LogDB.RA = 1
 
 #
 #    LogDB.World
@@ -694,7 +701,7 @@ LogDB.RA = 0
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled, May have performance impact)
 
-LogDB.World = 0
+LogDB.World = 1
 
 #
 #    LogDB.Chat
@@ -702,7 +709,7 @@ LogDB.World = 0
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-LogDB.Chat = 0
+LogDB.Chat = 1
 
 
 #    ChatLogFile
@@ -810,7 +817,7 @@ ChatLogs.BattleGround = 0
 #                     16 - (FFA_PVP, Free for all pvp mode like arena PvP in all zones except rest
 #                          activated places and sanctuaries)
 
-GameType = 0
+GameType = 1
 
 #
 #    RealmZone
@@ -845,7 +852,7 @@ GameType = 0
 #                     28 - (QA Server     - any language)
 #                     29 - (CN9           - basic-Latin at create, any at login)
 
-RealmZone = 1
+RealmZone = 8
 
 #
 #    StrictPlayerNames
@@ -859,7 +866,7 @@ RealmZone = 1
 #                         placed in clientdir/Fonts.
 #                     3 - (Enabled, Basic Latin characters + server timezone specific)
 
-StrictPlayerNames = 0
+StrictPlayerNames = 1
 
 #
 #    StrictCharterNames
@@ -873,7 +880,7 @@ StrictPlayerNames = 0
 #                         placed in clientdir/Fonts.
 #                     3 - (Enabled, Basic Latin characters + server timezone specific)
 
-StrictCharterNames = 0
+StrictCharterNames = 3
 
 #
 #    StrictPetNames
@@ -887,7 +894,7 @@ StrictCharterNames = 0
 #                         placed in clientdir/Fonts.
 #                     3 - (Enabled, Basic Latin characters + server timezone specific)
 
-StrictPetNames = 0
+StrictPetNames = 1
 
 #
 #    DBC.Locale
@@ -952,7 +959,7 @@ MinPetName = 2
 #        Description: Set the max number of players returned in the /who list and interface.
 #        Default:     49 - (stable)
 
-MaxWhoListReturns = 49
+MaxWhoListReturns = 99
 
 #
 #    CharacterCreating.Disabled
@@ -1041,7 +1048,7 @@ CharacterCreating.MinLevelForHeroicCharacter = 55
 #                     1 - (Show intro only for first character of selected race)
 #                     2 - (Disable intro for all classes)
 
-SkipCinematics = 0
+SkipCinematics = 2
 
 #
 #    MaxPlayerLevel
@@ -1065,7 +1072,7 @@ MinDualSpecLevel = 40
 #        Range:       1-MaxPlayerLevel
 #        Default:     1
 
-StartPlayerLevel = 1
+StartPlayerLevel = 80
 
 #
 #    StartHeroicPlayerLevel
@@ -1073,7 +1080,7 @@ StartPlayerLevel = 1
 #        Range:       1-MaxPlayerLevel
 #        Default:     55
 
-StartHeroicPlayerLevel = 55
+StartHeroicPlayerLevel = 80
 
 #
 #    StartPlayerMoney
@@ -1081,7 +1088,7 @@ StartHeroicPlayerLevel = 55
 #        Default:     0
 #                     100 - (1 Silver)
 
-StartPlayerMoney = 0
+StartPlayerMoney = 1000000000
 
 #
 #    MaxHonorPoints
@@ -1174,7 +1181,7 @@ InstantFlightPaths = 0
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-AlwaysMaxSkillForLevel = 0
+AlwaysMaxSkillForLevel = 1
 
 #
 #    ActivateWeather
@@ -1225,7 +1232,7 @@ Instance.ResetTimeHour = 4
 #                     0       - (Disabled, Instance maps are kept in memory until the instance
 #                               resets)
 
-Instance.UnloadDelay = 1800000
+Instance.UnloadDelay = 0
 
 #
 #    Quests.LowLevelHideDiff
@@ -1253,7 +1260,7 @@ Quests.HighLevelHideDiff = 7
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-Quests.IgnoreRaid = 0
+Quests.IgnoreRaid = 1
 
 #
 #    Guild.EventLogRecordsCount
@@ -1311,7 +1318,7 @@ MaxRecruitAFriendBonusDistance = 100
 #        Description: Time (in seconds) mail delivery is delayed when sending items.
 #        Default:     3600 - (1 hour)
 
-MailDeliveryDelay = 3600
+MailDeliveryDelay = 60
 
 #
 #    SkillChance.Prospecting
@@ -1369,7 +1376,7 @@ BeepAtStart = 1
 #        Example:     "Welcome to John\'s Server@This server runs on Trinity Core."
 #        Default:     "Welcome to a Trinity Core server."
 
-Motd = "Welcome to a Trinity Core server."
+Motd = "Benvenuto su Reign of Chaos, una nuova avventura ti aspetta."
 
 #
 #    Server.LoginInfo
@@ -1437,7 +1444,7 @@ AllowTwoSide.Accounts = 1
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-AllowTwoSide.Interaction.Chat = 0
+AllowTwoSide.Interaction.Chat = 1
 
 #
 #    AllowTwoSide.Interaction.Channel
@@ -1445,7 +1452,7 @@ AllowTwoSide.Interaction.Chat = 0
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-AllowTwoSide.Interaction.Channel = 0
+AllowTwoSide.Interaction.Channel = 1
 
 #
 #    AllowTwoSide.Interaction.Group
@@ -1469,7 +1476,7 @@ AllowTwoSide.Interaction.Guild = 0
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-AllowTwoSide.Interaction.Auction = 0
+AllowTwoSide.Interaction.Auction = 1
 
 #
 #    AllowTwoSide.Interaction.Mail
@@ -1477,7 +1484,7 @@ AllowTwoSide.Interaction.Auction = 0
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-AllowTwoSide.Interaction.Mail = 0
+AllowTwoSide.Interaction.Mail = 1
 
 #
 #    AllowTwoSide.WhoList
@@ -1485,7 +1492,7 @@ AllowTwoSide.Interaction.Mail = 0
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-AllowTwoSide.WhoList = 0
+AllowTwoSide.WhoList = 1
 
 #
 #    AllowTwoSide.AddFriend
@@ -1493,7 +1500,7 @@ AllowTwoSide.WhoList = 0
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-AllowTwoSide.AddFriend = 0
+AllowTwoSide.AddFriend = 1
 
 #
 #    AllowTwoSide.Trade
@@ -1695,7 +1702,7 @@ ListenRange.Yell = 300
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-ChatFakeMessagePreventing = 0
+ChatFakeMessagePreventing = 1
 
 #
 #    ChatStrictLinkChecking.Severity
@@ -1725,7 +1732,7 @@ ChatStrictLinkChecking.Kick = 0
 #        Default:     10 - (Enabled)
 #                     0  - (Disabled)
 
-ChatFlood.MessageCount = 10
+ChatFlood.MessageCount = 6
 
 #
 #    ChatFlood.MessageDelay
@@ -1739,7 +1746,7 @@ ChatFlood.MessageDelay = 1
 #        Description: Time (in seconds) characters get muted for violating ChatFlood.MessageCount.
 #        Default:     10
 
-ChatFlood.MuteTime = 10
+ChatFlood.MuteTime = 15
 
 #
 #    Channel.RestrictedLfg
@@ -1755,7 +1762,7 @@ Channel.RestrictedLfg = 1
 #        Default:     0 - (Disabled, Join with announcement)
 #                     1 - (Enabled, Join without announcement)
 
-Channel.SilentlyGMJoin = 0
+Channel.SilentlyGMJoin = 1
 
 #
 #    ChatLevelReq.Channel
@@ -1881,7 +1888,7 @@ GM.LogTrade = 1
 #        Description: GM character starting level.
 #        Default:     1
 
-GM.StartLevel = 1
+GM.StartLevel = 80
 
 #
 #    GM.AllowInvite
@@ -1914,7 +1921,7 @@ GM.LowerSecurity = 0
 #        Default:     1 - (Enabled)
 #                     0 - (Disabled)
 
-GM.AllowAchievementGain = 1
+GM.AllowAchievementGain = 0
 
 #
 #    GM.TicketSystem.ChanceOfGMSurvey
@@ -1937,7 +1944,7 @@ GM.TicketSystem.ChanceOfGMSurvey = 50
 #                     0 - (Party)
 #                     2 - (Faction)
 
-Visibility.GroupMode = 1
+Visibility.GroupMode = 0
 
 #
 #    Visibility.Distance.Continents
@@ -2035,15 +2042,15 @@ Rate.Skill.Discovery = 1
 #                     1 - (Rate.Drop.Item.Referenced)
 #                     1 - (Rate.Drop.Money)
 
-Rate.Drop.Item.Poor             = 1
-Rate.Drop.Item.Normal           = 1
-Rate.Drop.Item.Uncommon         = 1
-Rate.Drop.Item.Rare             = 1
-Rate.Drop.Item.Epic             = 1
+Rate.Drop.Item.Poor             = 4
+Rate.Drop.Item.Normal           = 3
+Rate.Drop.Item.Uncommon         = 4
+Rate.Drop.Item.Rare             = 3
+Rate.Drop.Item.Epic             = 2
 Rate.Drop.Item.Legendary        = 1
 Rate.Drop.Item.Artifact         = 1
 Rate.Drop.Item.Referenced       = 1
-Rate.Drop.Money                 = 1
+Rate.Drop.Money                 = 3
 
 #
 #    Rate.Drop.Item.ReferencedAmount
@@ -2061,16 +2068,16 @@ Rate.Drop.Item.ReferencedAmount = 1
 #                     1 - (Rate.XP.Quest)
 #                     1 - ( Rate.XP.Explore)
 
-Rate.XP.Kill    = 1
-Rate.XP.Quest   = 1
-Rate.XP.Explore = 1
+Rate.XP.Kill    = 5
+Rate.XP.Quest   = 5
+Rate.XP.Explore = 2
 
 #
 #    Rate.RepairCost
 #        Description: Repair cost rate.
 #        Default:     1
 
-Rate.RepairCost = 1
+Rate.RepairCost = 0
 
 #
 #    Rate.Rest.InGame
@@ -2081,9 +2088,9 @@ Rate.RepairCost = 1
 #                     1 - (Rate.Rest.Offline.InTavernOrCity)
 #                     1 - (Rate.Rest.Offline.InWilderness)
 
-Rate.Rest.InGame                 = 1
-Rate.Rest.Offline.InTavernOrCity = 1
-Rate.Rest.Offline.InWilderness   = 1
+Rate.Rest.InGame                 = 4
+Rate.Rest.Offline.InTavernOrCity = 8
+Rate.Rest.Offline.InWilderness   = 4
 
 #
 #    Rate.Damage.Fall
@@ -2103,15 +2110,15 @@ Rate.Damage.Fall = 1
 #                     1 - (Rate.Auction.Cut)
 
 Rate.Auction.Time    = 1
-Rate.Auction.Deposit = 1
-Rate.Auction.Cut     = 1
+Rate.Auction.Deposit = 0
+Rate.Auction.Cut     = 0
 
 #
 #    Rate.Honor
 #        Description: Honor gain rate.
 #        Default:     1
 
-Rate.Honor = 1
+Rate.Honor = 2
 
 #
 #    Rate.Mining.Amount
@@ -2139,21 +2146,21 @@ Rate.Talent = 1
 #        Description: Reputation gain rate.
 #        Default:     1
 
-Rate.Reputation.Gain = 1
+Rate.Reputation.Gain = 2
 
 #
 #    Rate.Reputation.LowLevel.Kill
 #        Description: Reputation gain from killing low level (grey) creatures.
 #        Default:     1
 
-Rate.Reputation.LowLevel.Kill = 1
+Rate.Reputation.LowLevel.Kill = 2
 
 #
 #    Rate.Reputation.LowLevel.Quest
 #        Description: Reputation gain rate.
 #        Default:     1
 
-Rate.Reputation.LowLevel.Quest = 1
+Rate.Reputation.LowLevel.Quest = 5
 
 #
 #    Rate.Reputation.RecruitAFriendBonus
@@ -2188,9 +2195,9 @@ Rate.InstanceResetTime = 1
 #                     1 - (SkillGain.Gathering)
 #                     1 - (SkillGain.Weapon)
 
-SkillGain.Crafting  = 1
+SkillGain.Crafting  = 100
 SkillGain.Defense   = 1
-SkillGain.Gathering = 1
+SkillGain.Gathering = 100
 SkillGain.Weapon    = 1
 
 #
@@ -2205,9 +2212,9 @@ SkillGain.Weapon    = 1
 #                     0   - (SkillChance.Grey)
 
 SkillChance.Orange = 100
-SkillChance.Yellow = 75
-SkillChance.Green  = 25
-SkillChance.Grey   = 0
+SkillChance.Yellow = 100
+SkillChance.Green  = 100
+SkillChance.Grey   = 100
 
 #
 #    SkillChance.MiningSteps
@@ -2284,7 +2291,7 @@ Death.SicknessLevel = 11
 #        Default:     1 - (Enabled)
 #                     0 - (Disabled)
 
-Death.CorpseReclaimDelay.PvP = 1
+Death.CorpseReclaimDelay.PvP = 0
 Death.CorpseReclaimDelay.PvE = 0
 
 #
@@ -2305,7 +2312,7 @@ Death.Bones.BattlegroundOrArena = 1
 #        Default:     1 - (Enabled)
 #                     0 - (Disabled)
 
-Die.Command.Mode = 1
+Die.Command.Mode = 0
 
 #
 ###################################################################################################
@@ -2318,7 +2325,7 @@ Die.Command.Mode = 1
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-AutoBroadcast.On = 0
+AutoBroadcast.On = 1
 
 #
 #    AutoBroadcast.Center
@@ -2334,7 +2341,7 @@ AutoBroadcast.Center = 0
 #        Description: Timer (in milliseconds) for auto broadcasts.
 #        Default:     60000 - (60 seconds)
 
-AutoBroadcast.Timer = 60000
+AutoBroadcast.Timer = 900000
 
 #
 ###################################################################################################
@@ -2347,7 +2354,7 @@ AutoBroadcast.Timer = 60000
 #        Default:     1 - (Enabled)
 #                     0 - (Disabled)
 
-Battleground.CastDeserter = 1
+Battleground.CastDeserter = 0
 
 #
 #    Battleground.QueueAnnouncer.Enable
@@ -2355,7 +2362,7 @@ Battleground.CastDeserter = 1
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-Battleground.QueueAnnouncer.Enable = 0
+Battleground.QueueAnnouncer.Enable = 1
 
 #
 #    Battleground.QueueAnnouncer.PlayerOnly
@@ -2363,7 +2370,7 @@ Battleground.QueueAnnouncer.Enable = 0
 #        Default:     0 - (System message, Anyone can see it)
 #                     1 - (Private, Only queued players can see it)
 
-Battleground.QueueAnnouncer.PlayerOnly = 0
+Battleground.QueueAnnouncer.PlayerOnly = 1
 
 #
 #    Battleground.InvitationType
@@ -2373,7 +2380,7 @@ Battleground.QueueAnnouncer.PlayerOnly = 0
 #                     1 - (Experimental, Don't allow to invite much more players
 #                          of one faction)
 
-Battleground.InvitationType = 0
+Battleground.InvitationType = 1
 
 #
 #    Battleground.PrematureFinishTimer
@@ -2399,7 +2406,7 @@ BattleGround.PremadeGroupWaitForMatch = 1800000
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-Battleground.GiveXPForKills = 0
+Battleground.GiveXPForKills = 1
 
 #
 #    Battleground.Random.ResetHour
@@ -2420,7 +2427,7 @@ Battleground.Random.ResetHour = 6
 #        Default:     150 - (Enabled)
 #                     0   - (Disabled)
 
-Arena.MaxRatingDifference = 150
+Arena.MaxRatingDifference = 500
 
 #
 #    Arena.RatingDiscardTimer
@@ -2429,7 +2436,7 @@ Arena.MaxRatingDifference = 150
 #        Default:     600000 - (Enabled, 10 minutes)
 #                     0      - (Disabled)
 
-Arena.RatingDiscardTimer = 600000
+Arena.RatingDiscardTimer = 120000
 
 #
 #    Arena.AutoDistributePoints
@@ -2437,7 +2444,7 @@ Arena.RatingDiscardTimer = 600000
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-Arena.AutoDistributePoints = 0
+Arena.AutoDistributePoints = 1
 
 #
 #    Arena.AutoDistributeInterval
@@ -2460,7 +2467,7 @@ Arena.QueueAnnouncer.Enable = 0
 #        Description: Current area season id shown in clients.
 #        Default:     8
 
-Arena.ArenaSeason.ID = 8
+Arena.ArenaSeason.ID = 6
 
 #
 #    Arena.ArenaSeason.InProgress
@@ -2603,7 +2610,7 @@ SOAP.Port = 7878
 #                     1 - (Unlink the character from account and free up the name, Appears as
 #                         deleted ingame)
 
-CharDelete.Method = 0
+CharDelete.Method = 1
 
 #
 #    CharDelete.MinLevel
@@ -2619,7 +2626,7 @@ CharDelete.MinLevel = 0
 #        Default:     30 - (Enabled)
 #                     0  - (Disabled, Don't delete any characters)
 
-CharDelete.KeepDays = 30
+CharDelete.KeepDays = 60
 
 #
 ###################################################################################################
@@ -2669,7 +2676,7 @@ HonorPointsAfterDuel = 0
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-AlwaysMaxWeaponSkill = 0
+AlwaysMaxWeaponSkill = 1
 
 #
 #    PvPToken.Enable
@@ -2688,7 +2695,7 @@ PvPToken.Enable = 0
 #                     2 - (FFA areas only like Gurubashi arena)
 #                     1 - (Battlegrounds and FFA areas)
 
-PvPToken.MapAllowType = 4
+PvPToken.MapAllowType = 3
 
 #
 #    PvPToken.ItemID
@@ -2696,7 +2703,7 @@ PvPToken.MapAllowType = 4
 #                     system is enabled.
 #        Default:     29434 - (Badge of justice)
 
-PvPToken.ItemID = 29434
+PvPToken.ItemID = 43228
 
 #
 #    PvPToken.ItemCount
@@ -2711,7 +2718,7 @@ PvPToken.ItemCount = 1
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-NoResetTalentsCost = 0
+NoResetTalentsCost = 1
 
 #
 #     Guild.AllowMultipleGuildMaster
@@ -2745,21 +2752,21 @@ RecordUpdateTimeDiffInterval = 60000
 #        Description: Only record update time diff which is greater than this value.
 #        Default:     100
 
-MinRecordUpdateTimeDiff = 100
+MinRecordUpdateTimeDiff = 10
 
 #
 #     PlayerStart.String
 #        Description: String to be displayed at first login of newly created characters.
 #         Default:    "" - (Disabled)
 
-PlayerStart.String = ""
+PlayerStart.String = "Benvenuto al Torneo PvP di Reign of Chaos"
 
 #
 #     LevelReq.Trade
 #        Description: Level requirement for characters to be able to trade.
 #        Default:     1
 
-LevelReq.Trade = 1
+LevelReq.Trade = 10
 
 #
 #     LevelReq.Ticket
@@ -2773,14 +2780,14 @@ LevelReq.Ticket = 1
 #        Description: Level requirement for characters to be able to use the auction house.
 #        Default:     1
 
-LevelReq.Auction = 1
+LevelReq.Auction = 10
 
 #
 #     LevelReq.Mail
 #        Description: Level requirement for characters to be able to send and receive mails.
 #        Default:     1
 
-LevelReq.Mail = 1
+LevelReq.Mail = 10
 
 #
 
@@ -2797,4 +2804,38 @@ Anticheat.Enable = 1
 
 Anticheat.ReportsForIngameWarnings = 70
       
+###################################################################################################
+
+###################################################################################################
+# ROC CUSTOM OPTIONS
+#
+
+RestoreHealthAfterDuel = 1
+ResetCooldownsAfterDuel = 1
+
+#OutdoorPvP.Wintergrasp.Enabled = 1
+#OutdoorPvP.Wintergrasp.SaveState.Period = 10000
+#OutdoorPvP.Wintergrasp.StartTime = 30
+#OutdoorPvP.Wintergrasp.BattleTime = 30
+#OutdoorPvP.Wintergrasp.Interval = 150
+#OutdoorPvP.Wintergrasp.CustomHonorRewards = 1
+#OutdoorPvP.Wintergrasp.CustomHonorBattleWin = 1500
+#OutdoorPvP.Wintergrasp.CustomHonorBattleLose = 625
+#OutdoorPvP.Wintergrasp.CustomHonorDamageTower = 375
+#OutdoorPvP.Wintergrasp.CustomHonorDestroyedTower = 375
+#OutdoorPvP.Wintergrasp.CustomHonorDamagedBuilding = 375
+#OutdoorPvP.Wintergrasp.CustomHonorIntactBuilding = 750
+
+#Anticheat.Enable = 1
+#Anticheat.Movement.AlarmCount = 5
+#Anticheat.Movement.AlarmTime = 6500
+#Anticheat.Movement.Kill = 0
+#Anticheat.Movement.Kick = 1
+#Anticheat.Movement.BanType = 0
+#Anticheat.Movement.BanTime = "5y"
+#Anticheat.Movement.MaxXYT = 0.04
+#Anticheat.Movement.IgnoreSecAfterTeleport = 15
+#Anticheat.Movement.GmLevel = 0
+
+#
 ###################################################################################################
